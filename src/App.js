@@ -1,4 +1,5 @@
 import logo from './logo.svg';
+import cat from './cat.jpg';
 import './App.css';
 
 function App() {
@@ -7,7 +8,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Edit <code>src/App.js</code> and save to reload. lalala
         </p>
         <a
           className="App-link"
@@ -17,6 +18,11 @@ function App() {
         >
           Learn React
         </a>
+        <button>
+          <a className="App-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Click Me!</a>
+        </button>
+        <img src={cat} className="App-logo" alt="logo"/>
+        {/* <Button>click me!</Button> */}
       </header>
     </div>
   );
