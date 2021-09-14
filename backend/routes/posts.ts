@@ -22,4 +22,14 @@ router.post('/createpost', (req: any, res: any) => {
     });
 })
 
+// get a specific post
+router.get('/getpost/:id', async (req: any, res: any) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        res.json(post);
+    } catch (err : any) {
+        res.json({message: err});
+    }
+})
+
 module.exports = router;
