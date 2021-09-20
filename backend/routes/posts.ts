@@ -8,7 +8,7 @@ router.get('/', (req: any, res: any) => {
 
 // create a post
 router.post('/createpost', (req: any, res: any) => {
-    console.log(req.body)
+    // console.log(req.body)
     const post = new Post({
         title: req.body.title,
         description: req.body.description,
@@ -35,10 +35,11 @@ router.get('/getpost/:id', async (req: any, res: any) => {
 // delete a specific post
 router.delete('/deletepost/:id', async (req: any, res: any) => {
     try {
-        const deletePost = await Post.deleteById({ _id : req.params.id });
-        console.log(deletePost);
+        // deleteOne = remove
+        const deletePost = await Post.deleteOne({ _id : req.params.id });
+        res.json(deletePost);
     } catch ( err: any ) {
-        res.json({message: err})
+        res.json({message: err});
     }
 })
 

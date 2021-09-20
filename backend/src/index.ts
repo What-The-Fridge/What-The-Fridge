@@ -20,9 +20,8 @@ app.listen(port, () => {
 
 // connect to DB
 db.once('open', () => {
-    console.log("MongoDB Database connected")
+    console.log("MongoDB Database connected");
 })
 
 // use /posts end point for all posts requests
 app.use('/posts', postsRoute);
-
