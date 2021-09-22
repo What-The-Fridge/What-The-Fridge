@@ -1,6 +1,8 @@
 import express from 'express';
-import db from '../db/database'
-const postsRoute = require('../routes/posts');
+import db from '../db/database';
+const postRoute = require('../routes/post');
+const userRoute = require('../routes/user');
+
 require('dotenv').config();
 const bodyParser = require('body-parser');
 
@@ -15,13 +17,14 @@ app.use(bodyParser.json());
 
 // start the server
 app.listen(port, () => {
-    console.log("started");
-})
+	console.log('started');
+});
 
 // connect to DB
 db.once('open', () => {
-    console.log("MongoDB Database connected");
-})
+	console.log('MongoDB Database connected');
+});
 
-// use /posts end point for all posts requests
-app.use('/posts', postsRoute);
+// use /post end point for all post requests
+app.use('/post', postRoute);
+app.use('/user', userRoute);

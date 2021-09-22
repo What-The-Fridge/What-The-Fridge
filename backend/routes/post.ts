@@ -3,7 +3,7 @@ const router = express.Router();
 const Post = require('../models/Post');
 
 router.get('/', (req: any, res: any) => {
-    res.send('We are on posts');
+    res.send('We are on post');
 });
 
 // create a post
