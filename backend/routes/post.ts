@@ -7,22 +7,25 @@ router.get('/', (req: any, res: any) => {
 });
 
 // create a post
-router.post('/createPost', (req: any, res: any) => {
-	// console.log(req.body)
-	const post = new Post({
-		title: req.body.title,
-		description: req.body.description,
-		body: req.body.body,
-	});
+router.post('/createPost', async (req: any, res: any) => {
+	try {
+		if (!req.body.title || !req.body.description)
+			return res.status(400).send('bad input');
 
-	post
-		.save()
-		.then((data: any) => {
-			res.json(data);
-		})
-		.catch((err: any) => {
-			res.json({ message: err });
-		});
+		const createPost = await new Post({
+			title: req.body.title,
+			description: req.body.description,
+			body: req.body.body,
+		}).save();
+
+		if (createPost) {
+			res.status(200).json(createPost);
+		} else {
+			res.status(204).json('cannot create post');
+		}
+	} catch (err: any) {
+		res.status(404).send(err);
+	}
 });
 
 // get a specific post by id
