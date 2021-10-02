@@ -31,21 +31,35 @@ router.post('/createPost', async (req: any, res: any) => {
 // get a specific post by id
 router.get('/getPost/:id', async (req: any, res: any) => {
 	try {
-		const post = await Post.findById(req.params.id);
-		res.json(post);
+		if (!req.params.id) return res.status(400).send('bad input');
+
+		const getPost = await Post.findById(req.params.id);
+
+		if (getPost) {
+			return res.status(200).json(getPost);
+		} else {
+			return res.status(204).json('cannot get post');
+		}
 	} catch (err: any) {
-		res.json({ message: err });
+		return res.status(404).json({ message: err });
 	}
 });
 
 // delete a specific post by id
 router.delete('/deletePost/:id', async (req: any, res: any) => {
 	try {
+		if (!req.params.id) return res.status(400).send('bad input');
+
 		// deleteOne = remove
 		const deletePost = await Post.deleteOne({ _id: req.params.id });
-		res.json(deletePost);
+
+		if (deletePost) {
+			return res.status(200).json(deletePost);
+		} else {
+			return res.status(204).json('cannot delete post');
+		}
 	} catch (err: any) {
-		res.json({ message: err });
+		return res.status(404).json({ message: err });
 	}
 });
 
