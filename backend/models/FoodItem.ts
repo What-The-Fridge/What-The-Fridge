@@ -1,7 +1,7 @@
 export {};
 const mongoose = require('mongoose');
 
-const FoodItem = mongoose.Schema({
+const FoodItemSchema = mongoose.Schema({
 	name: {
 		type: String,
 		require: true,
@@ -14,12 +14,10 @@ const FoodItem = mongoose.Schema({
 	expiryDate: {
 		type: Number,
 		require: true,
-		default: new Date().getTime() + 86400000, // a week from the creation date
+		default: new Date(
+			new Date().setTime(new Date().getTime() + 2 * 86400000)
+		).getTime(), // a week from creation
 	},
 });
 
-module.exports = mongoose.model('FoodItem', FoodItem);
-
-// new Date(
-//     new Date().setTime(new Date().getTime() + 2 * 86400000),
-//   ).getTime(), // two weeks from creation
+module.exports = mongoose.model('FoodItem', FoodItemSchema);

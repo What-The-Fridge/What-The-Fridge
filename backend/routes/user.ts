@@ -12,7 +12,7 @@ router.post('/createUser', async (req: any, res: any) => {
 			gender: req.body.gender,
 			phoneNum: req.body.phoneNum,
 			email: req.body.email,
-		}).save;
+		}).save();
 
 		if (createUser) {
 			return res.status(200).json(createUser);

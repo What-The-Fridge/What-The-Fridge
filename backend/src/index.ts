@@ -2,6 +2,7 @@ import express from 'express';
 import db from '../db/database';
 const postRoute = require('../routes/post');
 const userRoute = require('../routes/user');
+const foodItemRoute = require('../routes/foodItem');
 
 require('dotenv').config();
 const bodyParser = require('body-parser');
@@ -28,3 +29,4 @@ db.once('open', () => {
 // use /post end point for all post requests
 app.use('/post', postRoute);
 app.use('/user', userRoute);
+app.use('/foodItem', foodItemRoute);
