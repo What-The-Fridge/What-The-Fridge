@@ -7,6 +7,11 @@ const FoodItemSchema = mongoose.Schema({
 		require: true,
 		default: '',
 	},
+	user: {
+		type: mongoose.Types.ObjectId,
+		require: true.valueOf,
+		ref: 'User',
+	},
 	purchaseDate: {
 		type: Number,
 		default: new Date().getTime(),
