@@ -26,6 +26,10 @@ db.once('open', () => {
 	console.log('MongoDB Database connected');
 });
 
+console.log(
+	new Date(new Date().setTime(new Date().getTime() + 2 * 86400000)).getTime()
+); // a week from creation);
+
 // use /post end point for all post requests
 app.use('/post', postRoute);
 app.use('/user', userRoute);
