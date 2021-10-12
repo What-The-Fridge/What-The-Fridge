@@ -13,7 +13,7 @@ const GroceryItemSchema = mongoose.Schema({
 		require: true.valueOf,
 		ref: 'User',
 	},
-	GroceryStatus: {
+	groceryStatus: {
 		type: String,
 		enum: Object.values(GroceryStatusType),
 		default: GroceryStatusType.Undeclared,
