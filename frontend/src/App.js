@@ -23,24 +23,12 @@ function App() {
 		<div className="App">
 			<header className="App-header">
 				<GoogleLogin
-					clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+					clientId={process.env.GOOGLE_CLIENT_ID_WEB_APP}
 					buttonText="Log in with Google"
 					onSuccess={handleLogin}
 					onFailure={handleLogin}
 					cookiePolicy={'single_host_origin'}
 				/>
-				<button>
-					<a
-						className="App-link"
-						href="https://www.instagram.com/"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Click Me!
-					</a>
-				</button>
-				<img src={cat} className="App-logo" alt="logo" />
-				{/* <Button>click me!</Button> */}
 			</header>
 		</div>
 	);

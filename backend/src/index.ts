@@ -3,6 +3,7 @@ import db from '../db/database';
 const postRoute = require('../routes/post');
 const userRoute = require('../routes/user');
 const foodItemRoute = require('../routes/foodItem');
+const googleRoute = require('../routes/google');
 
 require('dotenv').config();
 const bodyParser = require('body-parser');
@@ -34,4 +35,4 @@ console.log(
 app.use('/post', postRoute);
 app.use('/user', userRoute);
 app.use('/foodItem', foodItemRoute);
-app.use('/auth', googleRoute);
+app.use('/google', googleRoute);

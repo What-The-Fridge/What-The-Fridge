@@ -3,6 +3,7 @@
 # dependencies
 /*/node_modules
 /*/.env
+/*/private-google.json
 /node_modules
 /.pnp
 .pnp.js

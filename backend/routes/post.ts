@@ -1,6 +1,5 @@
 import express from 'express';
 const router = express.Router();
-const Post = require('../models/Post');
 
 // import functions from controller
 const createPost = require('../controller/post/createPost');
