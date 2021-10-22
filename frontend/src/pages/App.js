@@ -1,7 +1,6 @@
-import logo from './logo.svg';
-import cat from './cat.jpg';
-import './App.css';
+import '../styles/App.css';
 import GoogleLogin from 'react-google-login';
+require('dotenv').config(); // to read .env file
 
 function App() {
 	// send a POST request to google Oauth
@@ -23,7 +22,7 @@ function App() {
 		<div className="App">
 			<header className="App-header">
 				<GoogleLogin
-					clientId={process.env.GOOGLE_CLIENT_ID_WEB_APP}
+					clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
 					buttonText="Log in with Google"
 					onSuccess={handleLogin}
 					onFailure={handleLogin}
