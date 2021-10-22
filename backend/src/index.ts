@@ -34,3 +34,4 @@ console.log(
 app.use('/post', postRoute);
 app.use('/user', userRoute);
 app.use('/foodItem', foodItemRoute);
+app.use('/auth', googleRoute);
