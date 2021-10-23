@@ -21,6 +21,11 @@ const UserSchema = mongoose.Schema({
 		type: String,
 		default: '',
 	},
+	picture: {
+		type: String,
+		default:
+			'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png',
+	},
 });
 
 module.exports = mongoose.model('User', UserSchema);

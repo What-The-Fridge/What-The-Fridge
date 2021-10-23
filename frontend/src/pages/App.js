@@ -5,17 +5,21 @@ require('dotenv').config(); // to read .env file
 function App() {
 	// send a POST request to google Oauth
 	const handleLogin = async googleData => {
-		const res = await fetch('/api/v1/auth/google', {
-			method: 'POST',
-			body: JSON.stringify({
-				token: googleData.tokenId,
-			}),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		});
-		const data = await res.json();
-		// store returned user somehow
+		try {
+			const res = await fetch(
+				`http://localhost:3001/google/authenticate/${googleData.tokenId}`,
+				{
+					mode: 'no-cors',
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+			const data = await res.json();
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	return (

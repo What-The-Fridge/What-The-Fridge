@@ -5,4 +5,6 @@ const router = express.Router();
 const authenticate = require('../controller/google/authenticate.ts');
 
 // specify endpoints
-router.post('/authenticate', authenticate);
+router.post('/authenticate/:token', authenticate);
+
+module.exports = router;
