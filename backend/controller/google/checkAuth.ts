@@ -5,7 +5,7 @@ const User = require('../../models/User');
 async function checkAuth(req: any, res: any, next: any) {
 	const user = await User.findOne({ id: req.session.userId });
 	req.user = user;
-	console.log('here');
+	console.log('check Auth');
 	next();
 }
 

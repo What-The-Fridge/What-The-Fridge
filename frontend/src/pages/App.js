@@ -9,7 +9,6 @@ function App() {
 			const res = await fetch(
 				`http://localhost:3001/google/authenticate/${googleData.tokenId}`,
 				{
-					mode: 'no-cors',
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -17,6 +16,21 @@ function App() {
 				}
 			);
 			const data = await res.json();
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getSession = async () => {
+		try {
+			const res = await fetch(`http://localhost:3001/google/me`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			});
+			const data = await res.json();
+			console.log(data);
 		} catch (err) {
 			console.log(err);
 		}
@@ -32,6 +46,7 @@ function App() {
 					onFailure={handleLogin}
 					cookiePolicy={'single_host_origin'}
 				/>
+				<button onClick={getSession}>hello there</button>
 			</header>
 		</div>
 	);
