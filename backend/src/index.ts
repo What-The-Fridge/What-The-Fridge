@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../db/database';
+import expressSession from 'express-session';
 const postRoute = require('../routes/post');
 const userRoute = require('../routes/user');
 const foodItemRoute = require('../routes/foodItem');
@@ -30,6 +31,15 @@ db.once('open', () => {
 console.log(
 	new Date(new Date().setTime(new Date().getTime() + 2 * 86400000)).getTime()
 ); // a week from creation);
+
+// allow the use of session
+app.use(
+	expressSession({
+		secret: 'your secret',
+		saveUninitialized: true,
+		resave: false,
+	})
+);
 
 // use /post end point for all post requests
 app.use('/post', postRoute);

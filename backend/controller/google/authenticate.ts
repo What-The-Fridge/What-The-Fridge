@@ -19,11 +19,15 @@ async function authenticate(req: any, res: any) {
 	const { name, email, picture } = ticket.getPayload();
 
 	//update the User with the identical email
-	const user = await User.updateOne(
+	const user = await User.findOneAndUpdate(
 		{ email: email },
 		{ $set: { name: name, picture: picture } },
 		{ upsert: true }
 	);
+
+	console.log(user);
+
+	req.session.userId = user._id;
 
 	if (user) {
 		return res.status(200).send(user);
