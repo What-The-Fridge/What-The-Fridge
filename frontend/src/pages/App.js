@@ -19,7 +19,7 @@ function App() {
 			const res = await fetch(
 				`http://localhost:3001/google/authenticate/${googleData.tokenId}`,
 				{
-					method: 'POST',
+					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
 					},
@@ -45,7 +45,7 @@ function App() {
 			'$1'
 		);
 		try {
-			const res = await fetch(`http://localhost:3001/google/me`, {
+			const res = await fetch(`http://localhost:3001/google/`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',

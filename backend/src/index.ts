@@ -1,12 +1,13 @@
 import express from 'express';
 import db from '../db/database';
 import expressSession from 'express-session';
-const cookieParser = require('cookie-parser');
+import MongoStore from 'connect-mongo';
 const postRoute = require('../routes/post');
 const userRoute = require('../routes/user');
 const foodItemRoute = require('../routes/foodItem');
 const googleRoute = require('../routes/google');
 const bodyParser = require('body-parser');
+
 require('dotenv').config();
 
 const port = process.env.PORT || 3001;
@@ -39,18 +40,24 @@ app.use(function (req, res, next) {
 });
 
 // allow the use of session
-const oneDay = 1000 * 60 * 60 * 24;
+const timePersistence = 1000 * 30; // 1 second * 60
+app.set('trust proxy', 1); // trust first proxy
 app.use(
 	expressSession({
 		secret: process.env.SESSION_SECRET_KEY!, // '!' ensure ts that we will provide the key
 		saveUninitialized: true,
-		cookie: { maxAge: oneDay },
+		cookie: {
+			secure: process.env.NODE_ENV == 'production' ? true : false,
+			maxAge: timePersistence,
+		},
 		resave: false,
+		store: MongoStore.create({
+			mongoUrl: process.env.MONGO_URL, //YOUR MONGODB URL
+			ttl: 1 * 24 * 60 * 60, // time to live = 1 day
+			autoRemove: 'native', // remove expired sessions
+		}),
 	})
 );
-
-// cookie parser middleware
-app.use(cookieParser());
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,10 +74,6 @@ app.listen(port, () => {
 db.once('open', () => {
 	console.log('MongoDB Database connected');
 });
-
-console.log(
-	new Date(new Date().setTime(new Date().getTime() + 2 * 86400000)).getTime()
-); // a week from creation);
 
 // use /post end point for all post requests
 app.use('/post', postRoute);
