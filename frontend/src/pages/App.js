@@ -1,8 +1,18 @@
 import '../styles/App.css';
 import GoogleLogin from 'react-google-login';
+import { useCookies } from 'react-cookie';
 require('dotenv').config(); // to read .env file
 
 function App() {
+	const [cookies, setCookie] = useCookies(['user']);
+
+	// save new cookie
+	function handleCookie(sessionId) {
+		setCookie('sessionId', sessionId, {
+			path: '/',
+		});
+	}
+
 	// send a POST request to google Oauth
 	const handleLogin = async googleData => {
 		try {
@@ -16,17 +26,30 @@ function App() {
 				}
 			);
 			const data = await res.json();
+
+			console.log(data);
+
+			if (data) {
+				handleCookie(data.sessionId);
+				console.log(cookies);
+			}
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
 	const getSession = async () => {
+		// get cookie with key 'sessionId' natively because react-cookie is broken
+		let sid = document.cookie.replace(
+			/(?:(?:^|.*;\s*)sessionId\s*\=\s*([^;]*).*$)|^.*$/,
+			'$1'
+		);
 		try {
 			const res = await fetch(`http://localhost:3001/google/me`, {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
+					sid: sid,
 				},
 			});
 			const data = await res.json();
