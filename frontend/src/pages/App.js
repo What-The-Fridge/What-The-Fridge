@@ -7,6 +7,7 @@ function App() {
 	const [cookies, setCookie] = useCookies(['user']);
 
 	// save new cookie
+	// TODO: Encrypt the sessionId before storing into cookie
 	function handleCookie(sessionId) {
 		setCookie('sessionId', sessionId, {
 			path: '/',
@@ -17,9 +18,9 @@ function App() {
 	const handleLogin = async googleData => {
 		try {
 			const res = await fetch(
-				`http://localhost:3001/google/authenticate/${googleData.tokenId}`,
+				`http://localhost:3001/google/login/${googleData.tokenId}`,
 				{
-					method: 'GET',
+					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
 					},
@@ -45,8 +46,8 @@ function App() {
 			'$1'
 		);
 		try {
-			const res = await fetch(`http://localhost:3001/google/`, {
-				method: 'GET',
+			const res = await fetch(`http://localhost:3001/google/logout`, {
+				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
 					sid: sid,
@@ -69,7 +70,7 @@ function App() {
 					onFailure={handleLogin}
 					cookiePolicy={'single_host_origin'}
 				/>
-				<button onClick={getSession}>hello there</button>
+				<button onClick={getSession}>log out</button>
 			</header>
 		</div>
 	);

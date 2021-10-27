@@ -3,7 +3,8 @@ const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
 // authenticate the user in the request with the user in the database.
-async function authenticate(req: any, res: any) {
+async function login(req: any, res: any) {
+	console.log('logging in');
 	console.log(req.sessionID);
 	const token = req.params.token;
 	if (!token) {
@@ -42,4 +43,4 @@ async function authenticate(req: any, res: any) {
 	}
 }
 
-module.exports = authenticate;
+module.exports = login;

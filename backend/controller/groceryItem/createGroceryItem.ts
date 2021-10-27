@@ -1,5 +1,3 @@
-import { userInfo } from 'os';
-
 export {};
 const GroceryItem = require('../../models/GroceryItem');
 

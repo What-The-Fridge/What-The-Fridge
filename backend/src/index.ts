@@ -7,7 +7,6 @@ const userRoute = require('../routes/user');
 const foodItemRoute = require('../routes/foodItem');
 const googleRoute = require('../routes/google');
 const bodyParser = require('body-parser');
-
 require('dotenv').config();
 
 const port = process.env.PORT || 3001;
@@ -32,7 +31,6 @@ app.use(function (req, res, next) {
 	);
 
 	// Set to true if you need the website to include cookies in the requests sent
-	// to the API (e.g. in case you use sessions)
 	res.setHeader('Access-Control-Allow-Credentials', 'true');
 
 	// Pass to next layer of middleware
@@ -40,12 +38,12 @@ app.use(function (req, res, next) {
 });
 
 // allow the use of session
-const timePersistence = 1000 * 30; // 1 second * 60
+const timePersistence = 1000 * 60; // 60 seconds
 app.set('trust proxy', 1); // trust first proxy
 app.use(
 	expressSession({
 		secret: process.env.SESSION_SECRET_KEY!, // '!' ensure ts that we will provide the key
-		saveUninitialized: true,
+		saveUninitialized: false, // only save modified sessions
 		cookie: {
 			secure: process.env.NODE_ENV == 'production' ? true : false,
 			maxAge: timePersistence,
