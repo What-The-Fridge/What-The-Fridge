@@ -2,7 +2,11 @@ import express from 'express';
 const router = express.Router();
 
 // import from controller
-const authenticate = require('../controller/google/authenticate.ts');
+const login = require('../controller/google/login.ts');
+const logout = require('../controller/google/logout.ts');
 
 // specify endpoints
-router.post('/authenticate', authenticate);
+router.post('/login/:token', login);
+router.delete('/logout', logout);
+
+module.exports = router;

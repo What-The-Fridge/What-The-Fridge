@@ -1,5 +1,3 @@
-import { userInfo } from 'os';
-
 export {};
 const GroceryItem = require('../../models/GroceryItem');
 
@@ -22,3 +20,5 @@ async function createGroceryItem(req: any, res: any) {
 		return res.status(404).json(err);
 	}
 }
+
+module.exports = createGroceryItem;

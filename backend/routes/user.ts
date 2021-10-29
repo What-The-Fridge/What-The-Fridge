@@ -6,6 +6,10 @@ const User = require('../models/User');
 const byEmailOrPhone = require('../controller/user/byEmailOrPhone');
 const createUser = require('../controller/user/createUser');
 const deleteUser = require('../controller/user/deleteUser');
+const checkAuth = require('../controller/google/checkAuth');
+
+// check authentication before every request
+router.use(checkAuth);
 
 // specify endpoints
 router.get('/byEmailOrPhone', byEmailOrPhone);
