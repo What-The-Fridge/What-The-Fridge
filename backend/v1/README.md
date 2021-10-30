@@ -22,3 +22,7 @@ Run `npm install` to install all dependencies
 `npm dev` or `yarn dev`           # start development on 3001 w nodemon
 `npm build` or `yarn build`       # build the server
 ```
+
+## MONGO SERVER AND GOOGLE CLOUD HAVE BEEN SHUT DOWN ON OCT 30 DUE TO LEAK
+
+## ALSO SWITCHING TO POSTGRESQL
