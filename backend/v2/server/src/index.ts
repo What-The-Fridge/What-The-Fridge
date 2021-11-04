@@ -10,10 +10,20 @@ import { verify } from 'jsonwebtoken';
 import { User } from './entity/User';
 import { createAccessToken, createRefreshToken } from './auth';
 import { sendRefreshToken } from './sendRefreshToken';
+import cors from 'cors';
 
 (async () => {
 	const app = express();
 	app.use(cookieParser());
+
+	// cors
+	var whitelist = ['http://localhost:3000', 'https://studio.apollographql.com'];
+	app.use(
+		cors({
+			origin: whitelist,
+			credentials: true,
+		})
+	);
 
 	app.get('/', (_req, res) => res.send('hello'));
 
@@ -54,7 +64,7 @@ import { sendRefreshToken } from './sendRefreshToken';
 		context: ({ req, res }) => ({ req, res }),
 	});
 	await apolloServer.start();
-	apolloServer.applyMiddleware({ app });
+	apolloServer.applyMiddleware({ app, cors: false });
 
 	app.listen(4000, () => {
 		console.log('express listening on port 4000');
