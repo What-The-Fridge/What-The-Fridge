@@ -56,6 +56,14 @@ export type User = {
   id: Scalars['Int'];
 };
 
+export type LoginMutationVariables = Exact<{
+  password: Scalars['String'];
+  email: Scalars['String'];
+}>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'LoginResponse', accessToken: string } };
+
 export type RegisterMutationVariables = Exact<{
   password: Scalars['String'];
   email: Scalars['String'];
@@ -64,7 +72,23 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: boolean };
 
+export type ByeQueryVariables = Exact<{ [key: string]: never; }>;
 
+
+export type ByeQuery = { __typename?: 'Query', bye: string };
+
+
+export const LoginDocument = gql`
+    mutation Login($password: String!, $email: String!) {
+  login(password: $password, email: $email) {
+    accessToken
+  }
+}
+    `;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
 export const RegisterDocument = gql`
     mutation Register($password: String!, $email: String!) {
   register(password: $password, email: $email)
@@ -73,4 +97,13 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const ByeDocument = gql`
+    query Bye {
+  bye
+}
+    `;
+
+export function useByeQuery(options: Omit<Urql.UseQueryArgs<ByeQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<ByeQuery>({ query: ByeDocument, ...options });
 };
