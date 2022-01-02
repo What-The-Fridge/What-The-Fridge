@@ -5,6 +5,14 @@ interface AppProps {}
 
 export const App: React.FC<AppProps> = ({}) => {
 	const [loading, setLoading] = useState(true);
+	function someName(input1: String, input2: String): String {
+		return 'sdfsdfd';
+	}
+
+	(input1: String, input2: String): String => {
+		return 'sdfasgasdf';
+	};
+
 	useEffect(() => {
 		fetch('http://localhost:4000/refresh_token', {
 			method: 'POST',
@@ -15,6 +23,7 @@ export const App: React.FC<AppProps> = ({}) => {
 			setLoading(false);
 		});
 	});
+
 	if (loading) {
 		return <div>loading...</div>;
 	}
