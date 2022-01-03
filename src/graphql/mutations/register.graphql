@@ -1,3 +1,0 @@
-mutation Register($password: String!, $email: String!) {
-	register(password: $password, email: $email)
-}

@@ -1,0 +1,14 @@
+mutation CreateFridge($ownerId: Float!, $name: String!) {
+	createFridge(ownerId: $ownerId, name: $name) {
+		errors {
+			field
+			message
+		}
+		fridge {
+			id
+			ownerId
+			name
+			createdAt
+		}
+	}
+}

@@ -1,0 +1,22 @@
+mutation CreateFridgeItem($input: FridgeItemInput!) {
+	createFridgeItem(input: $input) {
+		errors {
+			field
+			message
+		}
+		detailedFridgeItem {
+			id
+			fridgeItemInfoId
+			fridgeId
+			quantity
+			purchasedDate
+			expiryDate
+			createdAt
+			name
+			imgUrl
+			userId
+			upc
+			measurementTypeId
+		}
+	}
+}
