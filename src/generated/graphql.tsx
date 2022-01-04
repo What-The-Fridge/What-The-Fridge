@@ -179,11 +179,11 @@ export type MutationTransferFridgeOwnerArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getAllUsers: Array<User>;
   getFridgeFridgeItems: FridgeItemsResponse;
   getFridgeUsers: UsersResponse;
   getItemInfoNutritionix: FridgeItemInfoNutritionix;
   getUserFridges: FridgesResponse;
+  getUserInfo: UserResponse;
 };
 
 
@@ -204,6 +204,11 @@ export type QueryGetItemInfoNutritionixArgs = {
 
 export type QueryGetUserFridgesArgs = {
   userId: Scalars['Float'];
+};
+
+
+export type QueryGetUserInfoArgs = {
+  firebaseUserUID: Scalars['String'];
 };
 
 export type User = {
@@ -238,6 +243,13 @@ export type UsersResponse = {
   users?: Maybe<Array<User>>;
 };
 
+export type CreateUserMutationVariables = Exact<{
+  input: UserInput;
+}>;
+
+
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, user?: { __typename?: 'User', id: number, firebaseUserUID: string, firstName: string, tier: number, lastName: string, email: string, createdAt: string, imgUrl?: string | null | undefined } | null | undefined } };
+
 export type CreateFridgeMutationVariables = Exact<{
   ownerId: Scalars['Float'];
   name: Scalars['String'];
@@ -253,7 +265,38 @@ export type CreateFridgeItemMutationVariables = Exact<{
 
 export type CreateFridgeItemMutation = { __typename?: 'Mutation', createFridgeItem: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, createdAt: string, name: string, imgUrl?: string | null | undefined, userId: number, upc?: string | null | undefined, measurementTypeId: number } | null | undefined } };
 
+export type GetUserInfoQueryVariables = Exact<{
+  firebaseUserUid: Scalars['String'];
+}>;
 
+
+export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, user?: { __typename?: 'User', id: number, firebaseUserUID: string, firstName: string, lastName: string, tier: number, email: string, imgUrl?: string | null | undefined, createdAt: string } | null | undefined } };
+
+
+export const CreateUserDocument = gql`
+    mutation CreateUser($input: UserInput!) {
+  createUser(input: $input) {
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      firebaseUserUID
+      firstName
+      tier
+      lastName
+      email
+      createdAt
+      imgUrl
+    }
+  }
+}
+    `;
+
+export function useCreateUserMutation() {
+  return Urql.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument);
+};
 export const CreateFridgeDocument = gql`
     mutation CreateFridge($ownerId: Float!, $name: String!) {
   createFridge(ownerId: $ownerId, name: $name) {
@@ -301,4 +344,28 @@ export const CreateFridgeItemDocument = gql`
 
 export function useCreateFridgeItemMutation() {
   return Urql.useMutation<CreateFridgeItemMutation, CreateFridgeItemMutationVariables>(CreateFridgeItemDocument);
+};
+export const GetUserInfoDocument = gql`
+    query GetUserInfo($firebaseUserUid: String!) {
+  getUserInfo(firebaseUserUID: $firebaseUserUid) {
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      firebaseUserUID
+      firstName
+      lastName
+      tier
+      email
+      imgUrl
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useGetUserInfoQuery(options: Omit<Urql.UseQueryArgs<GetUserInfoQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetUserInfoQuery>({ query: GetUserInfoDocument, ...options });
 };

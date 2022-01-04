@@ -1,0 +1,18 @@
+query GetUserInfo($firebaseUserUid: String!) {
+	getUserInfo(firebaseUserUID: $firebaseUserUid) {
+		errors {
+			field
+			message
+		}
+		user {
+			id
+			firebaseUserUID
+			firstName
+			lastName
+			tier
+			email
+			imgUrl
+			createdAt
+		}
+	}
+}

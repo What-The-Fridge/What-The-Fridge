@@ -1,5 +1,5 @@
-import { Button, Text } from '@chakra-ui/react';
-import { Field, Form, Formik } from 'formik';
+import { Button } from '@chakra-ui/react';
+import { Form, Formik } from 'formik';
 import { withUrqlClient } from 'next-urql';
 import React from 'react';
 import { InputField } from '../../components/InputField';
@@ -7,21 +7,28 @@ import { Wrapper } from '../../components/Wrapper';
 import { useCreateFridgeMutation } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 
+import { getAuth } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { firebaseApp } from '../../components/Firebase';
+import { useAppContext } from '../../utils/context';
+
 interface CreateFridgeProps {}
 
 export const CreateFridge: React.FC<CreateFridgeProps> = ({}) => {
 	const [, createFridge] = useCreateFridgeMutation();
+	const [user, loading, error] = useAuthState(getAuth(firebaseApp));
+	const value = useAppContext();
 
+	console.log(value[0]);
 	return (
 		<Wrapper>
 			<Formik
-				initialValues={{ fridgeName: "Hachi's Fridge" }}
-				onSubmit={async () => {
-					// make a new fridge aka send a request to our graphql Server
-
+				initialValues={{ fridgeName: '' }}
+				onSubmit={async values => {
+					console.log(value[0].email);
 					await createFridge({
-						ownerId: 1,
-						name: "Hachi's Fridge 99999",
+						ownerId: value[0].id,
+						name: values.fridgeName,
 					});
 				}}
 			>
@@ -29,7 +36,7 @@ export const CreateFridge: React.FC<CreateFridgeProps> = ({}) => {
 					return (
 						<Form>
 							<InputField
-								name="fridge's name"
+								name="fridgeName"
 								placeholder="fridge's name"
 								label="Fridge's Name"
 							></InputField>

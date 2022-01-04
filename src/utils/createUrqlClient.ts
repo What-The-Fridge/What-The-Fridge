@@ -1,5 +1,4 @@
 import { dedupExchange, cacheExchange, fetchExchange } from '@urql/core';
-import { getAccessToken } from '../components/accessToken';
 
 export const createUrqlClient = (ssrExchange: any) => ({
 	url: 'http://localhost:4000/graphql',

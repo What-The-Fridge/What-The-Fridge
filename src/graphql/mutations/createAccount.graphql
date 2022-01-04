@@ -1,0 +1,18 @@
+mutation CreateUser($input: UserInput!) {
+	createUser(input: $input) {
+		errors {
+			field
+			message
+		}
+		user {
+			id
+			firebaseUserUID
+			firstName
+			tier
+			lastName
+			email
+			createdAt
+			imgUrl
+		}
+	}
+}

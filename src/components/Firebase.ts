@@ -10,6 +10,6 @@ const clientCredentials = {
 	appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-firebase.initializeApp(clientCredentials);
+export const firebaseApp = firebase.initializeApp(clientCredentials);
 
 export default firebase;
