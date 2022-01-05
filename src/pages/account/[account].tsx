@@ -1,4 +1,4 @@
-import { Button } from '@chakra-ui/react';
+import { Button, Text } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import { withUrqlClient } from 'next-urql';
 import React from 'react';
@@ -51,6 +51,7 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({}) => {
 				{props => {
 					return (
 						<Form>
+							<Text>Finish setting up your account:</Text>
 							<InputField
 								name="firstName"
 								placeholder="first name"

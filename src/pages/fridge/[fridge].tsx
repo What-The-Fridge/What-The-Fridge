@@ -11,6 +11,7 @@ import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseApp } from '../../components/Firebase';
 import { useAppContext } from '../../utils/context';
+import { Layout } from '../../components/Layout';
 
 interface CreateFridgeProps {}
 
@@ -21,38 +22,40 @@ export const CreateFridge: React.FC<CreateFridgeProps> = ({}) => {
 
 	console.log(value[0]);
 	return (
-		<Wrapper>
-			<Formik
-				initialValues={{ fridgeName: '' }}
-				onSubmit={async values => {
-					console.log(value[0].email);
-					await createFridge({
-						ownerId: value[0].id,
-						name: values.fridgeName,
-					});
-				}}
-			>
-				{props => {
-					return (
-						<Form>
-							<InputField
-								name="fridgeName"
-								placeholder="fridge's name"
-								label="Fridge's Name"
-							></InputField>
-							<Button
-								mt={4}
-								isLoading={props.isSubmitting}
-								type="submit"
-								colorScheme="teal"
-							>
-								Submit
-							</Button>
-						</Form>
-					);
-				}}
-			</Formik>
-		</Wrapper>
+		<Layout path={'/fridge'}>
+			<Wrapper>
+				<Formik
+					initialValues={{ fridgeName: '' }}
+					onSubmit={async values => {
+						console.log(value[0].email);
+						await createFridge({
+							ownerId: value[0].id,
+							name: values.fridgeName,
+						});
+					}}
+				>
+					{props => {
+						return (
+							<Form>
+								<InputField
+									name="fridgeName"
+									placeholder="fridge's name"
+									label="Fridge's Name"
+								></InputField>
+								<Button
+									mt={4}
+									isLoading={props.isSubmitting}
+									type="submit"
+									colorScheme="teal"
+								>
+									Submit
+								</Button>
+							</Form>
+						);
+					}}
+				</Formik>
+			</Wrapper>
+		</Layout>
 	);
 };
 
