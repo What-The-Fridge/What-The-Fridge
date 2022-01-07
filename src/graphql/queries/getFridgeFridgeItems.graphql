@@ -1,0 +1,24 @@
+query GetFridgeFridgeItems($fridgeId: Float!) {
+	getFridgeFridgeItems(fridgeId: $fridgeId) {
+		errors {
+			field
+			message
+		}
+		fridgeItems {
+			id
+			fridgeItemInfoId
+			fridgeId
+			quantity
+			purchasedDate
+			expiryDate
+			createdAt
+			name
+			upc
+			imgUrl
+			userId
+			measurementTypeId
+			measurement
+			measurementUnit
+		}
+	}
+}

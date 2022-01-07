@@ -1,0 +1,14 @@
+query GetUserFridges($userId: Float!) {
+	getUserFridges(userId: $userId) {
+		errors {
+			field
+			message
+		}
+		fridges {
+			id
+			name
+			ownerId
+			createdAt
+		}
+	}
+}
