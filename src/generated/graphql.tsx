@@ -107,7 +107,6 @@ export type FridgeResponse = {
 export type FridgeUserTable = {
   __typename?: 'FridgeUserTable';
   fridgeId: Scalars['Float'];
-  id: Scalars['Float'];
   userId: Scalars['Float'];
 };
 

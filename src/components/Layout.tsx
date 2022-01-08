@@ -23,7 +23,6 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 		paths = undefined;
 	}
 
-	console.log(paths);
 	let [{ data }] = useGetUserInfoQuery({
 		variables: {
 			firebaseUserUid: user?.uid!,
