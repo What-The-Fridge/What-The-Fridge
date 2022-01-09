@@ -11,12 +11,14 @@ mutation CreateFridgeItem($input: FridgeItemInput!) {
 			quantity
 			purchasedDate
 			expiryDate
-			createdAt
 			name
-			imgUrl
-			userId
+			createdAt
 			upc
+			userId
+			imgUrl
 			measurementTypeId
+			measurement
+			measurementUnit
 		}
 	}
 }

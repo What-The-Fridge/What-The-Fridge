@@ -1,6 +1,6 @@
 import { Box, Text, Link, Stack } from '@chakra-ui/layout';
 import { withUrqlClient } from 'next-urql';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout } from '../../components/Layout';
 import { Wrapper } from '../../components/Wrapper';
 import { createUrqlClient } from '../../utils/createUrqlClient';
@@ -12,7 +12,10 @@ import {
 } from '../../generated/graphql';
 import { Button, Select } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
-import FridgeItemTable from '../../components/fridges/FridgeItemTable';
+import FridgeItemTable, {
+	TableData,
+} from '../../components/fridges/FridgeItemTable';
+import { useRouter } from 'next/router';
 
 interface CreateFridgeProps {}
 
@@ -43,10 +46,11 @@ const FridgeItem: React.FC<FridgeItemProps> = (props): JSX.Element => {
 };
 
 export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
+	const [rerenderTable, setRendererTable] = useState(0);
 	const [selectedFridge, setSelectedFridge] = useState(0);
-	const [tableData, setTableData] = useState(undefined);
-
 	const value = useAppContext();
+	const router = useRouter();
+	// user fridges
 	let [{ data: userFridges, fetching: fetchingFridges }] =
 		useGetUserFridgesQuery({
 			variables: {
@@ -58,17 +62,31 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 		? userFridges?.getUserFridges.fridges
 		: [{ id: -1 }];
 
+	let fridgeId = allFridges[selectedFridge].id;
+
+	// fridge items
 	let [
 		{
 			data: fridgeItems,
 			fetching: fetchingFridgeItems,
 			error: fridgeItemsError,
 		},
+		executeQuery,
 	] = useGetFridgeFridgeItemsQuery({
 		variables: {
-			fridgeId: allFridges[selectedFridge].id,
+			fridgeId: fridgeId,
 		},
 	});
+
+	// re-run getFridgeItems hook
+	const refresh = () => {
+		// Refetch the query and skip the cache
+		executeQuery({ requestPolicy: 'network-only' });
+	};
+
+	useEffect(() => {
+		setRendererTable(rerenderTable + 1);
+	}, [fridgeItems]);
 
 	const renderUserFridges = () => {
 		if (!userFridges && fetchingFridges) return <Text>Loading...</Text>;
@@ -82,37 +100,53 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 		return (
 			<Select
 				onChange={(event: any) => {
-					console.log(event.target.selectedOptions[0].value);
-					setSelectedFridge(event.target.selectedOptions[0].value);
+					if (event.target.selectedOptions[0].value != 'createNewFridge') {
+						setSelectedFridge(event.target.selectedOptions[0].value);
+						refresh();
+					} else {
+						router.push('/fridges/createFridge');
+						event.target.selectedOptions[0].value = 0;
+					}
 				}}
 			>
 				{userFridges?.getUserFridges.fridges?.map((element, index) => {
 					return (
-						<option value={index} key={index}>
+						<option value={index} key={index} selected={index === 0}>
 							{element.name}
 						</option>
 					);
 				})}
+				<option value={'createNewFridge'}>Create a new fridge + </option>
 			</Select>
 		);
 	};
 
-	const renderFrigdeItems = () => {
+	const formatTableData = () => {
 		if (!fridgeItems && fetchingFridgeItems)
-			return <Text>Loading fridge items...</Text>;
+			return <Text mt={8}>Loading fridge items...</Text>;
 		if (!fridgeItems && !fetchingFridgeItems && fridgeItemsError)
-			return <Text>Errors fridge items</Text>;
+			return <Text mt={8}>Errors fridge items</Text>;
 
 		// TODO: There are other errors even if its a successful fetch
 		if (fridgeItems?.getFridgeFridgeItems.fridgeItems?.length === 0)
-			return <Text>This fridge is empty</Text>;
+			return <Text mt={8}>This fridge is empty👀</Text>;
+
+		let fetchedTableData: TableData[] = [];
+		fridgeItems?.getFridgeFridgeItems.fridgeItems?.map(element => {
+			fetchedTableData.push({
+				img: element.imgUrl,
+				name: element.name,
+				quantity: element.quantity,
+				unit: element.measurementUnit,
+				daysLeftUntilExpiry: 3,
+			});
+		});
 
 		return (
-			<Box>
-				{fridgeItems?.getFridgeFridgeItems.fridgeItems?.map(element => {
-					return <FridgeItem fridgeItem={element}></FridgeItem>;
-				})}
-			</Box>
+			<FridgeItemTable
+				data={() => fetchedTableData}
+				rerenderTime={selectedFridge}
+			/>
 		);
 	};
 
@@ -120,22 +154,32 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 		<Layout path={'/fridges'}>
 			<Box display={'flex'} flexDirection="column" alignItems="center">
 				{renderUserFridges()}
-			</Box>
-			<Box display={'flex'} flexDirection="column" alignItems="center">
-				{renderFrigdeItems()}
-			</Box>
-			<Box display={'flex'} flexDirection="column" alignItems="center">
-				<FridgeItemTable data={tableData} />
-			</Box>
-			<Wrapper>
-				<Link color="teal" href="/fridges/createFridge">
-					<Button colorScheme="teal" icon={<AddIcon />}>
-						Create a Fridge +
+				<Wrapper>
+					<Button
+						colorScheme="teal"
+						icon={<AddIcon />}
+						onClick={() => {
+							router.push({
+								pathname: `/fridges/createFridgeItem`,
+								query: { fridgeId: fridgeId },
+							});
+						}}
+					>
+						New fridge item 🍔
 					</Button>
-				</Link>
-			</Wrapper>
+				</Wrapper>
+			</Box>
+
+			<Box
+				key={rerenderTable}
+				display={'flex'}
+				flexDirection="column"
+				alignItems="center"
+			>
+				{formatTableData()}
+			</Box>
 		</Layout>
 	);
 };
 
-export default withUrqlClient(createUrqlClient)(Fridges);
+export default withUrqlClient(createUrqlClient, { ssr: true })(Fridges);

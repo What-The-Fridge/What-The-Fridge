@@ -1,5 +1,5 @@
 // code snippet from React-Table package. minor modification has been done
-import React, { Factory, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTable } from 'react-table';
 
@@ -59,10 +59,12 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
 			</thead>
 			<tbody {...getTableBodyProps()}>
 				{rows.map((row, i) => {
+					// console.log(row);
 					prepareRow(row);
 					return (
 						<tr {...row.getRowProps()}>
 							{row.cells.map(cell => {
+								// console.log(cell);
 								return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
 							})}
 						</tr>
@@ -73,22 +75,29 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
 	);
 };
 
+export interface TableData {
+	img: null | undefined | string;
+	name: string;
+	quantity: number | string;
+	unit?: string;
+	daysLeftUntilExpiry?: number | string;
+}
+
 interface FridgeItemTableProps {
-	data?: () => {
-		img?: string;
-		name?: string;
-		quantity?: number | string;
-		unit?: string;
-		daysLeftUntilExpiry?: number | string;
-	}[];
+	data?: () => TableData[];
+	rerenderTime: number;
 }
 
 const FridgeItemTable: React.FC<FridgeItemTableProps> = props => {
 	const columns = useMemo(
 		() => [
 			{
-				Header: '',
+				Header: 'Image',
 				accessor: 'img',
+				disableFilters: true,
+				Cell: (props: any) => (
+					<img src={props.row.original.img} width={100} alt="Player" />
+				),
 			},
 			{
 				Header: 'Name',
@@ -122,9 +131,10 @@ const FridgeItemTable: React.FC<FridgeItemTableProps> = props => {
 
 	const data = useMemo(props.data ? props.data : noData, []);
 
+	useEffect(() => {}, []);
 	return (
-		<Styles>
-			<Table columns={columns} data={data} />
+		<Styles key={props.rerenderTime}>
+			<Table columns={columns} data={data} key={props.rerenderTime} />
 		</Styles>
 	);
 };

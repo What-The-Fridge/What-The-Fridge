@@ -36,7 +36,7 @@ export const CreateFridge: React.FC<CreateFridgeProps> = ({}) => {
 									label="Fridge's Name"
 								></InputField>
 								<Button
-									mt={4}
+									mt={8}
 									isLoading={props.isSubmitting}
 									type="submit"
 									colorScheme="teal"

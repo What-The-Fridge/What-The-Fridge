@@ -12,17 +12,24 @@ export const CustomBreadcrumb: React.FC<CustomBreadcrumbProps> = (
 		<Breadcrumb
 			spacing="8px"
 			separator={<ChevronRightIcon color="gray.500" />}
-			mb={10}
+			mb={8}
 		>
 			{props.paths ? (
 				<BreadcrumbItem>
 					<BreadcrumbLink href="/">Home</BreadcrumbLink>
 				</BreadcrumbItem>
 			) : null}
-			{props.paths?.map(path => {
+			{props.paths?.map((path, index) => {
+				let nestedPath = '';
+				if (props.paths) {
+					for (let i = 0; i < index + 1; i++) {
+						nestedPath = `${nestedPath}/${props.paths[i]}`;
+					}
+				}
+
 				return (
 					<BreadcrumbItem>
-						<BreadcrumbLink href={`/${path}`}>
+						<BreadcrumbLink href={nestedPath}>
 							{path.charAt(0).toUpperCase() + path.slice(1)}
 						</BreadcrumbLink>
 					</BreadcrumbItem>

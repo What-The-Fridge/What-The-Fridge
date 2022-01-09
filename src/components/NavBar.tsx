@@ -1,7 +1,6 @@
 import {
 	Box,
 	Button,
-	Center,
 	Container,
 	Flex,
 	Heading,
@@ -153,7 +152,12 @@ export const Navbar: React.FC<NavbarProps> = (props): JSX.Element => {
 					</NavLink>
 
 					{user ? (
-						<Button colorScheme="orange" onClick={logout}>
+						<Button
+							variant="outline"
+							colorScheme="orange"
+							border="2px"
+							onClick={logout}
+						>
 							Logout
 						</Button>
 					) : (

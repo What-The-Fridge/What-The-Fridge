@@ -264,7 +264,7 @@ export type CreateFridgeItemMutationVariables = Exact<{
 }>;
 
 
-export type CreateFridgeItemMutation = { __typename?: 'Mutation', createFridgeItem: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, createdAt: string, name: string, imgUrl?: string | null | undefined, userId: number, upc?: string | null | undefined, measurementTypeId: number } | null | undefined } };
+export type CreateFridgeItemMutation = { __typename?: 'Mutation', createFridgeItem: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, name: string, createdAt: string, upc?: string | null | undefined, userId: number, imgUrl?: string | null | undefined, measurementTypeId: number, measurement: string, measurementUnit: string } | null | undefined } };
 
 export type GetFridgeFridgeItemsQueryVariables = Exact<{
   fridgeId: Scalars['Float'];
@@ -346,12 +346,14 @@ export const CreateFridgeItemDocument = gql`
       quantity
       purchasedDate
       expiryDate
-      createdAt
       name
-      imgUrl
-      userId
+      createdAt
       upc
+      userId
+      imgUrl
       measurementTypeId
+      measurement
+      measurementUnit
     }
   }
 }
