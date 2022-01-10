@@ -8,15 +8,19 @@ import {
 	NumberInputStepper,
 	NumberIncrementStepper,
 	NumberDecrementStepper,
+	Box,
+	Text,
 } from '@chakra-ui/react';
-import { Field, FieldProps, useField } from 'formik';
+import { Field, useField } from 'formik';
 import React, { InputHTMLAttributes } from 'react';
+import { CustomPopover } from './CustomPopOver';
 
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
 	label: string;
 	placeholder: string;
 	name: string;
 	numberProps?: { min: number; max: number };
+	InfoPopOver?: any;
 };
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -29,7 +33,17 @@ export const InputField: React.FC<InputFieldProps> = ({
 		<Field>
 			{({ form }: any) => (
 				<FormControl isInvalid={!!error}>
-					<FormLabel htmlFor={field.name}>{label}</FormLabel>
+					<FormLabel htmlFor={field.name}>
+						<Box display="flex" flexDirection={'row'} alignItems={'center'}>
+							<Text mr={3}>{label}</Text>
+							{props.InfoPopOver ? (
+								<CustomPopover
+									header={props.InfoPopOver.header}
+									body={props.InfoPopOver.body}
+								/>
+							) : null}
+						</Box>
+					</FormLabel>
 					{props.numberProps ? (
 						<NumberInput
 							{...field}

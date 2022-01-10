@@ -1,0 +1,13 @@
+query GetAllMeasurementTypes {
+	getAllMeasurementTypes {
+		errors {
+			message
+			field
+		}
+		measurementTypes {
+			id
+			measurement
+			measurementUnit
+		}
+	}
+}

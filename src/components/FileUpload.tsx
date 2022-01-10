@@ -44,7 +44,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 							if (!event.target.files) return;
 							validateSize(event.target);
 							setFieldValue('file', event.target.files[0]);
-							console.log(event.target.files[0]);
 							setFile(event.target.files[0]);
 						}}
 					/>

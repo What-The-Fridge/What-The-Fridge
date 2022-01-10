@@ -1,6 +1,9 @@
 import { withUrqlClient } from 'next-urql';
 import React from 'react';
-import { useCreateFridgeItemMutation } from '../../generated/graphql';
+import {
+	useCreateFridgeItemMutation,
+	useGetAllMeasurementTypesQuery,
+} from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { useAppContext } from '../../utils/context';
 import { Layout } from '../../components/Layout';
@@ -9,7 +12,6 @@ import {
 	Button,
 	Heading,
 	HStack,
-	Image,
 	Stack,
 	StackDivider,
 	Text,
@@ -22,6 +24,10 @@ import { Form, Formik } from 'formik';
 import { InputField } from '../../components/InputField';
 import { useRouter } from 'next/router';
 import { FileUpload } from '../../components/FileUpload';
+import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
+import { storage } from '../../components/Firebase';
+import { Tooltip } from '@chakra-ui/react';
+import { CustomPopover } from '../../components/CustomPopOver';
 
 interface CreateFridgeItemProps {}
 
@@ -29,6 +35,50 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
 	const value = useAppContext();
 	const router = useRouter();
+
+	let [
+		{
+			data: measurementTypes,
+			fetching: fetchingMeasurements,
+			error: measurementTypesError,
+		},
+	] = useGetAllMeasurementTypesQuery({
+		variables: {},
+	});
+
+	const renderUnits = () => {
+		if (!measurementTypes && fetchingMeasurements)
+			return <Text mt={8}>Loading available units...</Text>;
+		if (!measurementTypes && !fetchingMeasurements && measurementTypesError)
+			return <Text mt={8}>Error fetching units</Text>;
+
+		// TODO: There are other errors even if its a successful fetch
+		if (measurementTypes?.getAllMeasurementTypes.measurementTypes?.length === 0)
+			return <Text mt={8}>There are no available measurement units👀</Text>;
+
+		let measurements: { name: string; id: number }[] = [];
+		measurementTypes?.getAllMeasurementTypes.measurementTypes?.map(
+			measurement => {
+				measurements.push({
+					name: measurement.measurementUnit,
+					id: measurement.id,
+				});
+			}
+		);
+
+		return <MeasurementUnitSelect units={measurements} />;
+	};
+
+	const uploadFileToFirebase = async (file: File): Promise<null | string> => {
+		let imgURL = null;
+		if (!file) return imgURL;
+		const storageRef = ref(storage, `fridgeItems/${file.name}`);
+
+		const snapshot = await uploadBytes(storageRef, file);
+		const downloadURL = await getDownloadURL(snapshot.ref);
+		imgURL = downloadURL;
+		return imgURL;
+	};
 
 	return (
 		<Layout
@@ -41,17 +91,15 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					quantity: '1',
 					unit: '1',
 					upc: '',
-					// file: new FileList(),
+					file: '',
 				}}
-				onSubmit={(values, actions) => {
+				onSubmit={async (values, actions) => {
 					// TODO: Validation for the users(Invalid inputs)
+					let imgUrl = await uploadFileToFirebase(
+						values.file as unknown as File
+					);
 
-					// console.log({
-					// 	fileName: values.file.name,
-					// 	type: values.file.type,
-					// 	size: `${values.file.size} bytes`,
-					// });
-
+					console.log('File available at', imgUrl);
 					createFridgeItem({
 						input: {
 							fridgeId: parseInt(router.query.fridgeId as string),
@@ -59,9 +107,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 							name: values.name,
 							quantity: parseInt(values.quantity),
 							userId: value[0].id,
-							imgUrl:
-								'https://static.toiimg.com/thumb/75697881.cms?imgsize=2195010&width=800&height=800',
-							upc: values.upc,
+							imgUrl: imgUrl,
+							upc: values.upc == '' ? null : values.upc,
 							expiryDate: null,
 							purchasedDate: null,
 						},
@@ -102,28 +149,24 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										min={1}
 										max={999}
 									/>
-									<MeasurementUnitSelect
-										units={[
-											{ name: 'Kg', id: 1 },
-											{ name: 'L', id: 2 },
-											{ name: 'N/A', id: 3 },
-										]}
-									/>
+									{renderUnits()}
 								</VStack>
 							</FieldGroup>
 							<FieldGroup title="Optional Info">
 								<VStack direction="row" spacing="6" align="center" width="full">
 									<InputField
+										InfoPopOver={{
+											header: 'Warning',
+											body: 'Barcode is unique. Two items with the same barcode will share the same info!',
+										}}
 										name="upc"
 										placeholder="E.g. 056920124845"
 										label="Barcode"
 										maxLength={13}
 									/>
+
 									<Box>
 										<HStack spacing="5">
-											{/* <Button variant="ghost" colorScheme="red">
-												Delete
-											</Button> */}
 											<FileUpload
 												name="file"
 												label="Image upload:"

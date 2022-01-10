@@ -116,6 +116,19 @@ export type FridgesResponse = {
   fridges?: Maybe<Array<Fridge>>;
 };
 
+export type MeasurementType = {
+  __typename?: 'MeasurementType';
+  id: Scalars['Float'];
+  measurement: Scalars['String'];
+  measurementUnit: Scalars['String'];
+};
+
+export type MeasurementTypesResponse = {
+  __typename?: 'MeasurementTypesResponse';
+  errors?: Maybe<Array<FieldError>>;
+  measurementTypes?: Maybe<Array<MeasurementType>>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createFU: FuResponse;
@@ -180,6 +193,7 @@ export type MutationTransferFridgeOwnerArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  getAllMeasurementTypes: MeasurementTypesResponse;
   getFridgeFridgeItems: FridgeItemsResponse;
   getFridgeUsers: UsersResponse;
   getItemInfoNutritionix: FridgeItemInfoNutritionix;
@@ -265,6 +279,11 @@ export type CreateFridgeItemMutationVariables = Exact<{
 
 
 export type CreateFridgeItemMutation = { __typename?: 'Mutation', createFridgeItem: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, name: string, createdAt: string, upc?: string | null | undefined, userId: number, imgUrl?: string | null | undefined, measurementTypeId: number, measurement: string, measurementUnit: string } | null | undefined } };
+
+export type GetAllMeasurementTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllMeasurementTypesQuery = { __typename?: 'Query', getAllMeasurementTypes: { __typename?: 'MeasurementTypesResponse', errors?: Array<{ __typename?: 'FieldError', message: string, field: string }> | null | undefined, measurementTypes?: Array<{ __typename?: 'MeasurementType', id: number, measurement: string, measurementUnit: string }> | null | undefined } };
 
 export type GetFridgeFridgeItemsQueryVariables = Exact<{
   fridgeId: Scalars['Float'];
@@ -361,6 +380,25 @@ export const CreateFridgeItemDocument = gql`
 
 export function useCreateFridgeItemMutation() {
   return Urql.useMutation<CreateFridgeItemMutation, CreateFridgeItemMutationVariables>(CreateFridgeItemDocument);
+};
+export const GetAllMeasurementTypesDocument = gql`
+    query GetAllMeasurementTypes {
+  getAllMeasurementTypes {
+    errors {
+      message
+      field
+    }
+    measurementTypes {
+      id
+      measurement
+      measurementUnit
+    }
+  }
+}
+    `;
+
+export function useGetAllMeasurementTypesQuery(options: Omit<Urql.UseQueryArgs<GetAllMeasurementTypesQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetAllMeasurementTypesQuery>({ query: GetAllMeasurementTypesDocument, ...options });
 };
 export const GetFridgeFridgeItemsDocument = gql`
     query GetFridgeFridgeItems($fridgeId: Float!) {
