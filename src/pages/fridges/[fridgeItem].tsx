@@ -26,8 +26,6 @@ import { useRouter } from 'next/router';
 import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
-import { Tooltip } from '@chakra-ui/react';
-import { CustomPopover } from '../../components/CustomPopOver';
 
 interface CreateFridgeItemProps {}
 
@@ -35,6 +33,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
 	const value = useAppContext();
 	const router = useRouter();
+	const isCreation = router.query.fridgeItem === 'createFridgeItem';
+	console.log(isCreation);
+	console.log(router.query);
 
 	let [
 		{
@@ -132,7 +133,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					<Form>
 						<Stack spacing="4" divider={<StackDivider />}>
 							<Heading size="lg" as="h1" paddingBottom="4">
-								Create new fridge item
+								{isCreation ? 'Create new fridge item' : 'Edit fridge item'}
 							</Heading>
 							<FieldGroup title="Required Info">
 								<VStack width="full" spacing="6">
@@ -142,12 +143,13 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										label="Item's Name"
 									/>
 									<InputField
-										numberProps={{ min: 1, max: 999 }}
+										numberProps={{
+											min: isCreation ? 1 : 0,
+											max: 999,
+										}}
 										name="quantity"
 										placeholder="E.g. 1"
 										label="Quantity"
-										min={1}
-										max={999}
 									/>
 									{renderUnits()}
 								</VStack>
@@ -188,7 +190,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 						<FieldGroup mt="8">
 							<HStack width="full">
 								<Button type="submit" colorScheme="teal">
-									Submit
+									{isCreation ? 'Submit' : 'Update'}
 								</Button>
 								<Button
 									variant="outline"

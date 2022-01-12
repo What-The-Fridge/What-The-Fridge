@@ -2,13 +2,16 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTable } from 'react-table';
+import { Center, Image, Link } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { EditIcon } from '@chakra-ui/icons';
 
 const Styles = styled.div`
-	padding: 1rem;
+	/* margin-top: 32px; */
 
 	table {
 		border-spacing: 0;
-		border: 1px solid black;
+		border: 2px solid black;
 
 		tr {
 			:last-child {
@@ -22,8 +25,8 @@ const Styles = styled.div`
 		td {
 			margin: 0;
 			padding: 0.5rem;
-			border-bottom: 1px solid black;
-			border-right: 1px solid black;
+			border-bottom: 2px solid black;
+			border-right: 2px solid black;
 
 			:last-child {
 				border-right: 0;
@@ -81,6 +84,8 @@ export interface TableData {
 	quantity: number | string;
 	unit?: string;
 	daysLeftUntilExpiry?: number | string;
+	id: number;
+	infoId: number;
 }
 
 interface FridgeItemTableProps {
@@ -89,31 +94,84 @@ interface FridgeItemTableProps {
 }
 
 const FridgeItemTable: React.FC<FridgeItemTableProps> = props => {
+	const centeredText = (text: string) => {
+		return (
+			<div
+				style={{
+					textAlign: 'center',
+				}}
+			>
+				{text}
+			</div>
+		);
+	};
+
 	const columns = useMemo(
 		() => [
 			{
-				Header: 'Image',
+				Header: centeredText('Image'),
 				accessor: 'img',
 				disableFilters: true,
-				Cell: (props: any) => (
-					<img src={props.row.original.img} width={100} alt="Player" />
-				),
+				Cell: (props: any) => {
+					if (props.row.original.img)
+						return (
+							<Center>
+								<Image
+									src={props.row.original.img}
+									maxWidth="200"
+									maxHeight="200"
+									alt="Player"
+								/>
+							</Center>
+						);
+
+					return centeredText('-');
+				},
 			},
 			{
-				Header: 'Name',
+				Header: centeredText('Name'),
 				accessor: 'name',
+				Cell: (props: any) => {
+					if (props.row.original.name)
+						return (
+							<div
+								style={{
+									textAlign: 'center',
+								}}
+							>
+								<NextLink
+									href={`/fridges/editFridgeItem?itemId=${props.row.original.id}&itemInfoId=${props.row.original.infoId}`}
+									passHref
+								>
+									<Link>
+										{props.row.original.name} <EditIcon />
+									</Link>
+								</NextLink>
+							</div>
+						);
+
+					return centeredText('-');
+				},
 			},
 			{
-				Header: 'Quantity',
+				Header: centeredText('Quantity'),
 				accessor: 'quantity',
+				Cell: (props: any) => {
+					if (props.row.original.quantity && props.row.original.unit)
+						return centeredText(
+							`${props.row.original.quantity} ${props.row.original.unit}`
+						);
+					return centeredText('-');
+				},
 			},
 			{
-				Header: 'Unit',
-				accessor: 'unit',
-			},
-			{
-				Header: 'Days left',
+				Header: centeredText('Days left'),
 				accessor: 'daysLeftUntilExpiry',
+				Cell: (props: any) => {
+					if (props.row.original.daysLeftUntilExpiry)
+						return centeredText(props.row.original.daysLeftUntilExpiry);
+					return centeredText('-');
+				},
 			},
 		],
 		[]
@@ -126,6 +184,8 @@ const FridgeItemTable: React.FC<FridgeItemTableProps> = props => {
 			quantity: 'N/A',
 			unit: 'N/A',
 			daysLeftUntilExpiry: 'N/A',
+			id: 0,
+			infoId: 0,
 		},
 	];
 

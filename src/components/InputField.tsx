@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { Field, useField } from 'formik';
 import React, { InputHTMLAttributes } from 'react';
-import { CustomPopover } from './CustomPopOver';
+import { CustomPopover } from './CustomPopover';
 
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
 	label: string;
