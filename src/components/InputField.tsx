@@ -68,7 +68,6 @@ export const InputField: React.FC<InputFieldProps> = ({
 							focusBorderColor="teal.500"
 						/>
 					)}
-
 					{error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
 				</FormControl>
 			)}

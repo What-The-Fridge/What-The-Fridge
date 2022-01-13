@@ -17,6 +17,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 	const [field, { error }] = useField(props);
 	const [file, setFile] = useState<undefined | File>(undefined);
 
+	console.log(file);
+
 	function validateSize(input: any) {
 		if (input.files[0]) {
 			const fileSize = input.files[0].size / 1024 / 1024; // in MiB
@@ -41,10 +43,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 						id={props.name}
 						name={props.name}
 						onChange={event => {
-							if (!event.target.files) return;
-							validateSize(event.target);
-							setFieldValue('file', event.target.files[0]);
-							setFile(event.target.files[0]);
+							console.log('here');
+							if (!event.currentTarget.files) return;
+							validateSize(event.currentTarget);
+							setFieldValue('file', event.currentTarget.files[0]);
+							setFile(event.currentTarget.files[0]);
 						}}
 					/>
 					{file ? (

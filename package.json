@@ -1,10 +1,10 @@
 {
 	"private": true,
 	"scripts": {
-		"dev": "next",
-		"build": "next build",
-		"start": "next start",
-		"gen": "graphql-codegen --config codegen.yml"
+		"dev": "prettier next",
+		"build": "prettier next build",
+		"start": "prettier next start",
+		"gen": "prettier graphql-codegen --config codegen.yml"
 	},
 	"dependencies": {
 		"@apollo/react-hooks": "^4.0.0",

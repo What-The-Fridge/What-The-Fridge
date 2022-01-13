@@ -26,6 +26,7 @@ import { useRouter } from 'next/router';
 import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
+import { toErrorMap } from '../../components/ToErrorMap';
 
 interface CreateFridgeItemProps {}
 
@@ -81,6 +82,40 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		return imgURL;
 	};
 
+	const handleSubmit = async (
+		values: {
+			name: string;
+			quantity: string;
+			unit: string;
+			upc: string;
+			file: string;
+		},
+		imgUrl: string | null,
+		setErrors: any
+	): Promise<void> => {
+		await createFridgeItem({
+			input: {
+				fridgeId: parseInt(router.query.fridgeId as string),
+				measurementTypeId: parseInt(values.unit),
+				name: values.name,
+				quantity: parseInt(values.quantity),
+				userId: value[0].id,
+				imgUrl: imgUrl,
+				upc: values.upc == '' ? null : values.upc,
+				expiryDate: null,
+				purchasedDate: null,
+			},
+		}).then(response => {
+			if (response.data?.createFridgeItem.errors) {
+				alert('error!');
+				setErrors(toErrorMap(response.data.createFridgeItem.errors));
+			} else if (response.data?.createFridgeItem.detailedFridgeItem) {
+				// upon successful creating an account
+				alert('successful!');
+			}
+		});
+	};
+
 	return (
 		<Layout
 			path={`/fridges/createFridgeItem`}
@@ -94,39 +129,14 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					upc: '',
 					file: '',
 				}}
-				onSubmit={async (values, actions) => {
+				onSubmit={async (values, { setErrors }) => {
 					// TODO: Validation for the users(Invalid inputs)
 					let imgUrl = await uploadFileToFirebase(
 						values.file as unknown as File
 					);
 
 					console.log('File available at', imgUrl);
-					createFridgeItem({
-						input: {
-							fridgeId: parseInt(router.query.fridgeId as string),
-							measurementTypeId: parseInt(values.unit),
-							name: values.name,
-							quantity: parseInt(values.quantity),
-							userId: value[0].id,
-							imgUrl: imgUrl,
-							upc: values.upc == '' ? null : values.upc,
-							expiryDate: null,
-							purchasedDate: null,
-						},
-					}).then(response => {
-						alert('submitted');
-						if (response.data?.createFridgeItem.errors) {
-							console.log(
-								'error creating account',
-								response.data?.createFridgeItem.errors[0]
-							);
-							alert('error!');
-						} else if (response.data?.createFridgeItem.detailedFridgeItem) {
-							console.log('here');
-							// upon successful creating an account
-							alert('successful!');
-						}
-					});
+					handleSubmit(values, imgUrl, setErrors);
 				}}
 			>
 				{props => (
@@ -189,7 +199,11 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 						</Stack>
 						<FieldGroup mt="8">
 							<HStack width="full">
-								<Button type="submit" colorScheme="teal">
+								<Button
+									type="submit"
+									colorScheme="teal"
+									isLoading={props.isSubmitting}
+								>
 									{isCreation ? 'Submit' : 'Update'}
 								</Button>
 								<Button
