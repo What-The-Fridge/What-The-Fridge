@@ -37,7 +37,7 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 		}
 
 		if (data.getUserInfo.errors) {
-			// move to home page
+			// move to create account page
 			router.push('/account/createAccount');
 		}
 	}

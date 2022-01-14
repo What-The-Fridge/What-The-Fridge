@@ -113,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = (props): JSX.Element => {
 			as="nav"
 			w="100%"
 			zIndex={1}
-			bg={useColorModeValue('#8d9b6a', '#8a9ea7')}
+			bg={useColorModeValue('#8d9b6a', '#2F6D80')}
 		>
 			<Container
 				maxW="2xl"
