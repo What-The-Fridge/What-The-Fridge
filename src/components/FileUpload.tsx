@@ -33,7 +33,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
 	return (
 		<Field>
-			{({ form }: any) => (
+			{({ }: any) => (
 				<FormControl isInvalid={!!error}>
 					<FormLabel htmlFor={field.name}>{label}</FormLabel>
 					<input

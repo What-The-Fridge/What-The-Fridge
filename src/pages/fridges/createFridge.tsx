@@ -21,10 +21,11 @@ export const CreateFridge: React.FC<CreateFridgeProps> = ({}) => {
 				<Formik
 					initialValues={{ fridgeName: '' }}
 					onSubmit={async values => {
-						await createFridge({
+						const response = await createFridge({
 							ownerId: value[0].id,
 							name: values.fridgeName,
 						});
+						console.log(response);
 					}}
 				>
 					{props => {

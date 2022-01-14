@@ -33,6 +33,7 @@ interface CreateFridgeItemProps {}
 export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
 	const value = useAppContext();
+
 	const router = useRouter();
 	const isCreation = router.query.fridgeItem === 'createFridgeItem';
 	console.log(isCreation);
@@ -74,8 +75,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const uploadFileToFirebase = async (file: File): Promise<null | string> => {
 		let imgURL = null;
 		if (!file) return imgURL;
-		const storageRef = ref(storage, `fridgeItems/${file.name}`);
-
+		const userEmail = value[0].email;
+		const currTime = Date.now();
+		const storageRef = ref(storage, `fridgeItems/${userEmail}/${file.name}${currTime}`);
 		const snapshot = await uploadBytes(storageRef, file);
 		const downloadURL = await getDownloadURL(snapshot.ref);
 		imgURL = downloadURL;
