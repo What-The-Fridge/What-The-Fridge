@@ -1,0 +1,9 @@
+mutation DeleteFridge($itemId: Float!) {
+  deleteFridgeItem(itemId: $itemId) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}

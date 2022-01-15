@@ -2,6 +2,7 @@ import { withUrqlClient } from 'next-urql';
 import React from 'react';
 import {
 	useCreateFridgeItemMutation,
+	useDeleteFridgeMutation,
 	useGetAllMeasurementTypesQuery,
 } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
@@ -32,6 +33,7 @@ interface CreateFridgeItemProps {}
 
 export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
+	const [, deleteFridgeItem] = useDeleteFridgeMutation();
 	const value = useAppContext();
 
 	const router = useRouter();
@@ -59,7 +61,10 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		if (measurementTypes?.getAllMeasurementTypes.measurementTypes?.length === 0)
 			return <Text mt={8}>There are no available measurement units👀</Text>;
 
-		let measurements: { name: string; id: number }[] = [];
+		let measurements: {
+			name: string;
+			id: number;
+		}[] = [];
 		measurementTypes?.getAllMeasurementTypes.measurementTypes?.map(
 			measurement => {
 				measurements.push({
@@ -77,7 +82,10 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		if (!file) return imgURL;
 		const userEmail = value[0].email;
 		const currTime = Date.now();
-		const storageRef = ref(storage, `fridgeItems/${userEmail}/${file.name}${currTime}`);
+		const storageRef = ref(
+			storage,
+			`fridgeItems/${userEmail}/${file.name}${currTime}`
+		);
 		const snapshot = await uploadBytes(storageRef, file);
 		const downloadURL = await getDownloadURL(snapshot.ref);
 		imgURL = downloadURL;
@@ -118,6 +126,19 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		});
 	};
 
+	const deleteFridgeItemSubmission = async () => {
+		deleteFridgeItem({
+			itemId: parseInt(router.query.itemId as string),
+		}).then(response => {
+			if (response.data?.deleteFridgeItem.errors) {
+				alert('error deleting the item');
+			} else if (response.data?.deleteFridgeItem.success) {
+				alert('successfully deleted the item');
+				router.push('/fridges');
+			}
+		});
+	};
+
 	return (
 		<Layout
 			path={`/fridges/createFridgeItem`}
@@ -144,9 +165,16 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 				{props => (
 					<Form>
 						<Stack spacing="4" divider={<StackDivider />}>
-							<Heading size="lg" as="h1" paddingBottom="4">
-								{isCreation ? 'Create new fridge item' : 'Edit fridge item'}
-							</Heading>
+							<Box
+								display="flex"
+								flexDirection={'row'}
+								justifyContent={'between'}
+								width="full"
+							>
+								<Heading size="lg" as="h1" paddingBottom="4">
+									{isCreation ? 'Create new fridge item' : 'Edit fridge item'}
+								</Heading>
+							</Box>
 							<FieldGroup title="Required Info">
 								<VStack width="full" spacing="6">
 									<InputField
@@ -208,6 +236,18 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 								>
 									{isCreation ? 'Submit' : 'Update'}
 								</Button>
+								{!isCreation ? (
+									<Button
+										onClick={() => {
+											deleteFridgeItemSubmission();
+										}}
+										variant="outline"
+										colorScheme="red"
+										border="2px"
+									>
+										Delete
+									</Button>
+								) : null}
 								<Button
 									variant="outline"
 									colorScheme="orange"
