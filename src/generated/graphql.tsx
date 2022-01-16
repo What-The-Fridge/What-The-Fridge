@@ -281,11 +281,18 @@ export type CreateFridgeItemMutationVariables = Exact<{
 export type CreateFridgeItemMutation = { __typename?: 'Mutation', createFridgeItem: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, name: string, createdAt: string, upc?: string | null | undefined, userId: number, imgUrl?: string | null | undefined, measurementTypeId: number, measurement: string, measurementUnit: string } | null | undefined } };
 
 export type DeleteFridgeMutationVariables = Exact<{
+  fridgeId: Scalars['Float'];
+}>;
+
+
+export type DeleteFridgeMutation = { __typename?: 'Mutation', deleteFridge: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
+
+export type DeleteFridgeItemMutationVariables = Exact<{
   itemId: Scalars['Float'];
 }>;
 
 
-export type DeleteFridgeMutation = { __typename?: 'Mutation', deleteFridgeItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
+export type DeleteFridgeItemMutation = { __typename?: 'Mutation', deleteFridgeItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
 
 export type GetAllMeasurementTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -389,8 +396,8 @@ export function useCreateFridgeItemMutation() {
   return Urql.useMutation<CreateFridgeItemMutation, CreateFridgeItemMutationVariables>(CreateFridgeItemDocument);
 };
 export const DeleteFridgeDocument = gql`
-    mutation DeleteFridge($itemId: Float!) {
-  deleteFridgeItem(itemId: $itemId) {
+    mutation DeleteFridge($fridgeId: Float!) {
+  deleteFridge(fridgeId: $fridgeId) {
     errors {
       field
       message
@@ -402,6 +409,21 @@ export const DeleteFridgeDocument = gql`
 
 export function useDeleteFridgeMutation() {
   return Urql.useMutation<DeleteFridgeMutation, DeleteFridgeMutationVariables>(DeleteFridgeDocument);
+};
+export const DeleteFridgeItemDocument = gql`
+    mutation DeleteFridgeItem($itemId: Float!) {
+  deleteFridgeItem(itemId: $itemId) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}
+    `;
+
+export function useDeleteFridgeItemMutation() {
+  return Urql.useMutation<DeleteFridgeItemMutation, DeleteFridgeItemMutationVariables>(DeleteFridgeItemDocument);
 };
 export const GetAllMeasurementTypesDocument = gql`
     query GetAllMeasurementTypes {

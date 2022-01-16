@@ -1,4 +1,4 @@
-mutation DeleteFridge($itemId: Float!) {
+mutation DeleteFridgeItem($itemId: Float!) {
   deleteFridgeItem(itemId: $itemId) {
     errors {
       field
