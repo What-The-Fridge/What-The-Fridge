@@ -2,9 +2,10 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTable } from 'react-table';
-import { Center, Image, Link } from '@chakra-ui/react';
+import { Box, Button, Center, Image, Link } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { EditIcon } from '@chakra-ui/icons';
+import { useRouter } from 'next/router';
 
 const Styles = styled.div`
 	/* margin-top: 32px; */
@@ -91,9 +92,12 @@ export interface TableData {
 interface FridgeItemTableProps {
 	data?: () => TableData[];
 	rerenderTime: number;
+	fridgeId: number;
 }
 
-const FridgeItemTable: React.FC<FridgeItemTableProps> = props => {
+const FridgeItemTable = (props: FridgeItemTableProps) => {
+	const router = useRouter();
+
 	const centeredText = (text: string) => {
 		return (
 			<div
@@ -193,9 +197,66 @@ const FridgeItemTable: React.FC<FridgeItemTableProps> = props => {
 
 	useEffect(() => {}, []);
 	return (
-		<Styles key={props.rerenderTime}>
-			<Table columns={columns} data={data} key={props.rerenderTime} />
-		</Styles>
+		<Box>
+			<Center>
+				<Box
+					as="button"
+					mr="8"
+					mb="4"
+					p="2"
+					color="white"
+					fontWeight="bold"
+					borderRadius="md"
+					bgGradient="linear(to-r, teal.500, green.500)"
+					_hover={{
+						bgGradient: 'linear(to-r, red.500, yellow.500)',
+					}}
+					onClick={() => {
+						router.push({
+							pathname: `/fridges/createFridgeItem`,
+							query: { fridgeId: props.fridgeId },
+						});
+					}}
+				>
+					New Fridge Item
+				</Box>
+
+				<Box
+					as="button"
+					mr="8"
+					mb="4"
+					p="2"
+					color="white"
+					fontWeight="bold"
+					borderRadius="md"
+					bgGradient="linear(to-r, teal.500, green.500)"
+					_hover={{
+						bgGradient: 'linear(to-r, red.500, yellow.500)',
+					}}
+				>
+					Delete Selected
+				</Box>
+
+				<Box
+					as="button"
+					mr="8"
+					mb="4"
+					p="2"
+					color="white"
+					fontWeight="bold"
+					borderRadius="md"
+					bgGradient="linear(to-r, teal.500, green.500)"
+					_hover={{
+						bgGradient: 'linear(to-r, red.500, yellow.500)',
+					}}
+				>
+					Clear Fridge
+				</Box>
+			</Center>
+			<Styles key={props.rerenderTime}>
+				<Table columns={columns} data={data} key={props.rerenderTime} />
+			</Styles>
+		</Box>
 	);
 };
 

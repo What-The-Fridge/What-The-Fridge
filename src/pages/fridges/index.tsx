@@ -5,6 +5,7 @@ import { Layout } from '../../components/Layout';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { useAppContext } from '../../utils/context';
 import {
+	useDeleteFridgeMutation,
 	useGetFridgeFridgeItemsQuery,
 	useGetUserFridgesQuery,
 } from '../../generated/graphql';
@@ -22,6 +23,7 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 	const [selectedFridge, setSelectedFridge] = useState(0);
 	const value = useAppContext();
 	const router = useRouter();
+	const [, deleteFridge] = useDeleteFridgeMutation();
 
 	// user fridges
 	let [{ data: userFridges, fetching: fetchingFridges }] =
@@ -112,16 +114,15 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 				</Select>
 				<Box ml={8}>
 					<Button
-						colorScheme="teal"
+						variant="outline"
+						colorScheme="red"
+						border="2px"
 						icon={<AddIcon />}
 						onClick={() => {
-							router.push({
-								pathname: `/fridges/createFridgeItem`,
-								query: { fridgeId: fridgeId },
-							});
+							deleteFridge({ fridgeId: fridgeId });
 						}}
 					>
-						New fridge item 🍔
+						Delete Fridge
 					</Button>
 				</Box>
 			</Box>
@@ -157,6 +158,7 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 			<FridgeItemTable
 				data={() => fetchedTableData}
 				rerenderTime={selectedFridge}
+				fridgeId={fridgeId}
 			/>
 		);
 	};
