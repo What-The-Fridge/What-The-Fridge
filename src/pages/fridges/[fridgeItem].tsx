@@ -1,8 +1,8 @@
 import { withUrqlClient } from 'next-urql';
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	useCreateFridgeItemMutation,
-	useDeleteFridgeMutation,
+	useDeleteFridgeItemMutation,
 	useGetAllMeasurementTypesQuery,
 } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
@@ -28,12 +28,15 @@ import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
 import { toErrorMap } from '../../components/ToErrorMap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import styled, { css, createGlobalStyle } from 'styled-components';
 
 interface CreateFridgeItemProps {}
 
 export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
-	const [, deleteFridgeItem] = useDeleteFridgeMutation();
+	const [, deleteFridgeItem] = useDeleteFridgeItemMutation();
 	const value = useAppContext();
 
 	const router = useRouter();
@@ -139,6 +142,14 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		});
 	};
 
+	const [startDate, setStartDate] = useState<Date | null>(new Date());
+
+	const DatePickerWrapperStyles = createGlobalStyle`
+		.colour-mode-style{
+			color: black;
+		}
+	`;
+
 	return (
 		<Layout
 			path={`/fridges/createFridgeItem`}
@@ -224,6 +235,16 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 											.jpg, .gif, or .png. Max file size 2MiB.
 										</Text>
 									</Box>
+
+									<DatePicker
+										className="colour-mode-style"
+										selected={startDate}
+										onChange={date => {
+											setStartDate(date);
+											console.log(date);
+										}}
+									/>
+									<DatePickerWrapperStyles />
 								</VStack>
 							</FieldGroup>
 						</Stack>
