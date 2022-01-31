@@ -100,6 +100,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			unit: string;
 			upc: string;
 			file: string;
+			purchasedDate: string;
+			expiryDate: string;
 		},
 		imgUrl: string | null,
 		setErrors: any
@@ -113,8 +115,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 				userId: value[0].id,
 				imgUrl: imgUrl,
 				upc: values.upc == '' ? null : values.upc,
-				expiryDate: null,
-				purchasedDate: null,
+				purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
+				expiryDate: values.expiryDate == '' ? null : values.expiryDate,
 			},
 		}).then(response => {
 			if (response.data?.createFridgeItem.errors) {
@@ -152,7 +154,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					unit: '1',
 					upc: '',
 					file: '',
-					date: '',
+					purchasedDate: '',
+					expiryDate: '',
 				}}
 				onSubmit={async (values, { setErrors }) => {
 					// TODO: Validation for the users(Invalid inputs)
@@ -211,13 +214,23 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 									<CustomDatePicker
 										label="Purchased date"
 										setFieldValue={props.setFieldValue}
-										name="Purchased date"
+										name="purchasedDate"
+										value="purchasedDate"
+										InfoPopOver={{
+											header: 'Warning',
+											body: 'Default purchased date is set today',
+										}}
 									/>
 
 									<CustomDatePicker
-										label="Expiry date (default 7 days)"
+										label="Expiry date"
 										setFieldValue={props.setFieldValue}
-										name="Expiry date"
+										name="expiryDate"
+										value="expiryDate"
+										InfoPopOver={{
+											header: 'Warning',
+											body: 'Default expiry date is set to 7 days from now',
+										}}
 									/>
 
 									<Box>
