@@ -17,8 +17,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 	const [field, { error }] = useField(props);
 	const [file, setFile] = useState<undefined | File>(undefined);
 
-	console.log(file);
-
 	function validateSize(input: any) {
 		if (input.files[0]) {
 			const fileSize = input.files[0].size / 1024 / 1024; // in MiB
@@ -33,7 +31,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
 	return (
 		<Field>
-			{({ }: any) => (
+			{({}: any) => (
 				<FormControl isInvalid={!!error}>
 					<FormLabel htmlFor={field.name}>{label}</FormLabel>
 					<input

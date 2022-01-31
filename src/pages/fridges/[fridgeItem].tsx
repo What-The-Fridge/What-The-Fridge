@@ -28,9 +28,7 @@ import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
 import { toErrorMap } from '../../components/ToErrorMap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import styled, { css, createGlobalStyle } from 'styled-components';
+import { CustomDatePicker } from '../../components/CustomDatePicker';
 
 interface CreateFridgeItemProps {}
 
@@ -142,14 +140,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		});
 	};
 
-	const [startDate, setStartDate] = useState<Date | null>(new Date());
-
-	const DatePickerWrapperStyles = createGlobalStyle`
-		.colour-mode-style{
-			color: black;
-		}
-	`;
-
 	return (
 		<Layout
 			path={`/fridges/createFridgeItem`}
@@ -162,6 +152,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					unit: '1',
 					upc: '',
 					file: '',
+					date: '',
 				}}
 				onSubmit={async (values, { setErrors }) => {
 					// TODO: Validation for the users(Invalid inputs)
@@ -169,7 +160,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 						values.file as unknown as File
 					);
 
-					console.log('File available at', imgUrl);
 					handleSubmit(values, imgUrl, setErrors);
 				}}
 			>
@@ -218,11 +208,23 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										maxLength={13}
 									/>
 
+									<CustomDatePicker
+										label="Purchased date"
+										setFieldValue={props.setFieldValue}
+										name="Purchased date"
+									/>
+
+									<CustomDatePicker
+										label="Expiry date (default 7 days)"
+										setFieldValue={props.setFieldValue}
+										name="Expiry date"
+									/>
+
 									<Box>
 										<HStack spacing="5">
 											<FileUpload
 												name="file"
-												label="Image upload:"
+												label="Image upload"
 												accept="image/png, image/jpeg, image/gif"
 												setFieldValue={props.setFieldValue}
 											/>
@@ -235,16 +237,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 											.jpg, .gif, or .png. Max file size 2MiB.
 										</Text>
 									</Box>
-
-									<DatePicker
-										className="colour-mode-style"
-										selected={startDate}
-										onChange={date => {
-											setStartDate(date);
-											console.log(date);
-										}}
-									/>
-									<DatePickerWrapperStyles />
 								</VStack>
 							</FieldGroup>
 						</Stack>
