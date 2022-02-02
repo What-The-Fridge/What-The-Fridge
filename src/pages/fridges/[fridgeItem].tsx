@@ -1,8 +1,8 @@
 import { withUrqlClient } from 'next-urql';
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	useCreateFridgeItemMutation,
-	useDeleteFridgeMutation,
+	useDeleteFridgeItemMutation,
 	useGetAllMeasurementTypesQuery,
 } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
@@ -28,12 +28,13 @@ import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
 import { toErrorMap } from '../../components/ToErrorMap';
+import { CustomDatePicker } from '../../components/CustomDatePicker';
 
 interface CreateFridgeItemProps {}
 
 export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
-	const [, deleteFridgeItem] = useDeleteFridgeMutation();
+	const [, deleteFridgeItem] = useDeleteFridgeItemMutation();
 	const value = useAppContext();
 
 	const router = useRouter();
@@ -99,6 +100,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			unit: string;
 			upc: string;
 			file: string;
+			purchasedDate: string;
+			expiryDate: string;
 		},
 		imgUrl: string | null,
 		setErrors: any
@@ -112,8 +115,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 				userId: value[0].id,
 				imgUrl: imgUrl,
 				upc: values.upc == '' ? null : values.upc,
-				expiryDate: null,
-				purchasedDate: null,
+				purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
+				expiryDate: values.expiryDate == '' ? null : values.expiryDate,
 			},
 		}).then(response => {
 			if (response.data?.createFridgeItem.errors) {
@@ -151,6 +154,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					unit: '1',
 					upc: '',
 					file: '',
+					purchasedDate: '',
+					expiryDate: '',
 				}}
 				onSubmit={async (values, { setErrors }) => {
 					// TODO: Validation for the users(Invalid inputs)
@@ -158,7 +163,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 						values.file as unknown as File
 					);
 
-					console.log('File available at', imgUrl);
 					handleSubmit(values, imgUrl, setErrors);
 				}}
 			>
@@ -207,11 +211,33 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										maxLength={13}
 									/>
 
+									<CustomDatePicker
+										label="Purchased date"
+										setFieldValue={props.setFieldValue}
+										name="purchasedDate"
+										value="purchasedDate"
+										InfoPopOver={{
+											header: 'Warning',
+											body: 'Default purchased date is set today',
+										}}
+									/>
+
+									<CustomDatePicker
+										label="Expiry date"
+										setFieldValue={props.setFieldValue}
+										name="expiryDate"
+										value="expiryDate"
+										InfoPopOver={{
+											header: 'Warning',
+											body: 'Default expiry date is set to 7 days from now',
+										}}
+									/>
+
 									<Box>
 										<HStack spacing="5">
 											<FileUpload
 												name="file"
-												label="Image upload:"
+												label="Image upload"
 												accept="image/png, image/jpeg, image/gif"
 												setFieldValue={props.setFieldValue}
 											/>

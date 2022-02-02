@@ -141,12 +141,20 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 
 		let fetchedTableData: TableData[] = [];
 		fridgeItems?.getFridgeFridgeItems.fridgeItems?.map(element => {
+			let daysLeft: number | undefined = undefined;
+			if (element.expiryDate) {
+				const dayOfExpiry = new Date(parseInt(element.expiryDate));
+				const today = new Date();
+				daysLeft = Math.round(
+					(dayOfExpiry.getTime() - today.getTime()) / (1000 * 3600 * 24)
+				);
+			}
 			fetchedTableData.push({
 				img: element.imgUrl,
 				name: element.name,
 				quantity: element.quantity,
 				unit: element.measurementUnit,
-				daysLeftUntilExpiry: 3,
+				daysLeftUntilExpiry: daysLeft,
 				id: element.id,
 				infoId: element.fridgeItemInfoId,
 			});
