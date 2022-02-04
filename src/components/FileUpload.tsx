@@ -34,6 +34,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 			{({}: any) => (
 				<FormControl isInvalid={!!error}>
 					<FormLabel htmlFor={field.name}>{label}</FormLabel>
+					{/* More investigation */}
+					{/* <Button>
+						<label htmlFor={props.name} style={{ cursor: 'pointer' }}>
+							Upload
+						</label>
+					</Button> */}
 					<input
 						style={{ cursor: 'pointer' }}
 						type="file"
@@ -41,13 +47,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 						id={props.name}
 						name={props.name}
 						onChange={event => {
-							console.log('here');
 							if (!event.currentTarget.files) return;
 							validateSize(event.currentTarget);
 							setFieldValue('file', event.currentTarget.files[0]);
 							setFile(event.currentTarget.files[0]);
 						}}
 					/>
+
 					{file ? (
 						<Box>
 							<Center>
@@ -55,7 +61,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 								<Button
 									m={3}
 									variant="outline"
-									colorScheme="orange"
+									colorScheme="red"
 									border="2px"
 									onClick={() => {
 										(

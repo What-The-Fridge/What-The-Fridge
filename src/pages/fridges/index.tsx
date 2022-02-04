@@ -19,7 +19,7 @@ import { useRouter } from 'next/router';
 interface CreateFridgeProps {}
 
 export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
-	const [rerenderTable, setRendererTable] = useState(0);
+	const [rerenderTable, setRerenderTable] = useState(0);
 	const [selectedFridge, setSelectedFridge] = useState(0);
 	const value = useAppContext();
 	const router = useRouter();
@@ -60,8 +60,8 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 	};
 
 	useEffect(() => {
-		setRendererTable(rerenderTable + 1);
-	}, [fridgeItems]);
+		setRerenderTable(rerenderTable + 1);
+	}, [fridgeItems, userFridges]);
 
 	const renderUserFridges = () => {
 		if (!userFridges && fetchingFridges) return <Text>Loading...</Text>;
@@ -117,7 +117,6 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 						variant="outline"
 						colorScheme="red"
 						border="2px"
-						icon={<AddIcon />}
 						onClick={() => {
 							deleteFridge({ fridgeId: fridgeId });
 						}}
@@ -159,8 +158,6 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 				infoId: element.fridgeItemInfoId,
 			});
 		});
-
-		console.log(fetchedTableData);
 
 		return (
 			<FridgeItemTable
