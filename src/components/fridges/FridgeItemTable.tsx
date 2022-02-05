@@ -1,5 +1,5 @@
 // code snippet from React-Table package. minor modification has been done
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useTable, useRowSelect, useBlockLayout } from 'react-table';
 import {
@@ -94,7 +94,6 @@ const Styles = styled.div<TableStyleProps>`
 		}
 	}
 `;
-
 interface Props {
 	indeterminate?: boolean;
 }
@@ -122,15 +121,15 @@ const IndeterminateCheckbox = React.forwardRef<HTMLInputElement, Props>(
 interface TableProps {
 	columns: any;
 	data: any;
+	setSelectedRows: Function;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data }) => {
+const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
 	// Use the state and functions returned from useTable to build your UI
 	const {
 		getTableProps,
 		getTableBodyProps,
 		headerGroups,
-		footerGroups,
 		rows,
 		prepareRow,
 		selectedFlatRows,
@@ -196,32 +195,8 @@ const Table: React.FC<TableProps> = ({ columns, data }) => {
 					);
 				})}
 			</div>
-			{/* <div className="footer">
-				{footerGroups.map(footerGroup => (
-					<div {...footerGroup.getHeaderGroupProps()} className="tr">
-						{footerGroup.headers.map(column => (
-							<div {...column.getHeaderProps()} className="td">
-								{column.render('Footer')}
-							</div>
-						))}
-					</div>
-				))}
-			</div> */}
-			<p>Selected Rows: {Object.keys(selectedRowIds).length}</p>
-			<pre>
-				<code>
-					{JSON.stringify(
-						{
-							selectedRowIds: selectedRowIds,
-							'selectedFlatRows[].original': selectedFlatRows.map(
-								d => d.original
-							),
-						},
-						null,
-						2
-					)}
-				</code>
-			</pre>
+			{/* set selected rows */}
+			{setSelectedRows(selectedFlatRows)}
 		</div>
 	);
 };
@@ -244,7 +219,8 @@ interface FridgeItemTableProps {
 
 const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const router = useRouter();
-	const { colorMode, toggleColorMode } = useColorMode();
+	const [selectedRows, setSelectedRows] = useState(null);
+	const { colorMode } = useColorMode();
 	const isDark = colorMode === 'dark';
 
 	const centeredText = (text: string) => {
@@ -333,6 +309,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const data = useMemo(props.data ? props.data : noData, []);
 
 	useEffect(() => {}, []);
+
 	return (
 		<Box>
 			<Center mt={4}>
@@ -355,14 +332,21 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					variant="outline"
 					colorScheme="red"
 					border="2px"
-					onClick={() => {}}
+					onClick={() => {
+						console.log(selectedRows);
+					}}
 				>
 					Delete Selected
 				</Button>
 			</Center>
 			<Center>
 				<Styles isDark={isDark} key={props.rerenderTime}>
-					<Table columns={columns} data={data} key={props.rerenderTime} />
+					<Table
+						columns={columns}
+						data={data}
+						setSelectedRows={setSelectedRows}
+						key={props.rerenderTime}
+					/>
 				</Styles>
 			</Center>
 		</Box>
