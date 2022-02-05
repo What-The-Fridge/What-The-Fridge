@@ -16,6 +16,7 @@ import NextLink from 'next/link';
 import { EditIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useSticky } from 'react-table-sticky';
+import { useDeleteFridgeItemMutation } from '../../generated/graphql';
 
 interface TableStyleProps {
 	isDark: boolean;
@@ -219,7 +220,8 @@ interface FridgeItemTableProps {
 
 const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const router = useRouter();
-	const [selectedRows, setSelectedRows] = useState(null);
+	const [selectedRows, setSelectedRows] = useState<any[]>([]);
+	const [, deleteFridgeItem] = useDeleteFridgeItemMutation();
 	const { colorMode } = useColorMode();
 	const isDark = colorMode === 'dark';
 
@@ -333,7 +335,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					colorScheme="red"
 					border="2px"
 					onClick={() => {
-						console.log(selectedRows);
+						selectedRows.forEach(element => deleteFridgeItem({itemId: element.original.id}));
 					}}
 				>
 					Delete Selected
