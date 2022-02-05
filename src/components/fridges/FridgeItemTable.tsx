@@ -1,81 +1,203 @@
 // code snippet from React-Table package. minor modification has been done
-import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
-import { useTable } from 'react-table';
-import { Box, Button, Center, Image, Link } from '@chakra-ui/react';
+import React, { useEffect, useMemo, useState } from 'react';
+import styled, { css } from 'styled-components';
+import { useTable, useRowSelect, useBlockLayout } from 'react-table';
+import {
+	Box,
+	Button,
+	Center,
+	Container,
+	Divider,
+	Image,
+	Link,
+	useColorMode,
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { EditIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
+import { useSticky } from 'react-table-sticky';
 
-const Styles = styled.div`
-	/* margin-top: 32px; */
+interface TableStyleProps {
+	isDark: boolean;
+}
 
-	table {
-		border-spacing: 0;
-		border: 2px solid black;
+const Styles = styled.div<TableStyleProps>`
+	.table {
+		border: 1px solid #ddd;
 
-		tr {
+		.tr {
 			:last-child {
-				td {
+				.td {
 					border-bottom: 0;
 				}
 			}
 		}
 
-		th,
-		td {
-			margin: 0;
-			padding: 0.5rem;
-			border-bottom: 2px solid black;
-			border-right: 2px solid black;
+		.th,
+		.td {
+			padding: 5px;
+			border-bottom: 1px solid #ddd;
+			border-right: 1px solid #ddd;
+			${({ isDark }) =>
+				isDark &&
+				css`
+					background: #222a3a;
+				`}
+
+			${({ isDark }) =>
+				!isDark &&
+				css`
+					background: #fff;
+				`}
+			overflow: hidden;
 
 			:last-child {
 				border-right: 0;
 			}
 		}
+
+		&.sticky {
+			overflow: auto;
+			.header,
+			.footer {
+				position: sticky;
+				z-index: 1;
+				width: fit-content;
+			}
+
+			.header {
+				top: 0;
+				/* box-shadow: 0px 3px 3px #ccc; */
+			}
+
+			.footer {
+				bottom: 0;
+				box-shadow: 0px -3px 3px #ccc;
+			}
+
+			.body {
+				position: relative;
+				z-index: 0;
+			}
+
+			[data-sticky-td] {
+				position: sticky;
+			}
+
+			[data-sticky-last-left-td] {
+				box-shadow: 2px 0px 3px #ccc;
+			}
+
+			[data-sticky-first-right-td] {
+				box-shadow: -2px 0px 3px #ccc;
+			}
+		}
 	}
 `;
+interface Props {
+	indeterminate?: boolean;
+}
+
+const IndeterminateCheckbox = React.forwardRef<HTMLInputElement, Props>(
+	({ indeterminate, ...rest }, ref) => {
+		const defaultRef =
+			React.useRef() as React.MutableRefObject<HTMLInputElement>;
+		const resolvedRef = ref || defaultRef;
+
+		React.useEffect(() => {
+			if (typeof resolvedRef === 'object' && resolvedRef.current) {
+				resolvedRef.current.indeterminate = Boolean(indeterminate);
+			}
+		}, [resolvedRef, indeterminate]);
+
+		return (
+			<>
+				<input type="checkbox" ref={resolvedRef} {...rest} />
+			</>
+		);
+	}
+);
 
 interface TableProps {
 	columns: any;
 	data: any;
+	setSelectedRows: Function;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data }) => {
+const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
 	// Use the state and functions returned from useTable to build your UI
-	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-		useTable({
+	const {
+		getTableProps,
+		getTableBodyProps,
+		headerGroups,
+		rows,
+		prepareRow,
+		selectedFlatRows,
+		state: { selectedRowIds },
+	} = useTable(
+		{
 			columns,
 			data,
-		});
+		},
+		useBlockLayout,
+		useSticky,
+		useRowSelect,
+		hooks => {
+			hooks.visibleColumns.push(columns => [
+				// Let's make a column for selection
+				{
+					id: 'selection',
+					// The header can use the table's getToggleAllRowsSelectedProps method
+					// to render a checkbox
+					Header: ({ getToggleAllRowsSelectedProps }) => (
+						<Center style={{ height: '100%' }}>
+							<IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+						</Center>
+					),
+					// The cell can use the individual row's getToggleRowSelectedProps method
+					// to the render a checkbox
+					Cell: ({ row }) => (
+						<Center style={{ height: '100%' }}>
+							<IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+						</Center>
+					),
+				},
+				...columns,
+			]);
+		}
+	);
 
 	// Render the UI for your table
 	return (
-		<table {...getTableProps()}>
-			<thead>
+		<div {...getTableProps()} className="table sticky" style={{ height: 500 }}>
+			<div className="header">
 				{headerGroups.map(headerGroup => (
-					<tr {...headerGroup.getHeaderGroupProps()}>
+					<div {...headerGroup.getHeaderGroupProps()} className="tr">
 						{headerGroup.headers.map(column => (
-							<th {...column.getHeaderProps()}>{column.render('Header')}</th>
+							<div {...column.getHeaderProps()} className="th">
+								{column.render('Header')}
+							</div>
 						))}
-					</tr>
+					</div>
 				))}
-			</thead>
-			<tbody {...getTableBodyProps()}>
-				{rows.map((row, i) => {
-					// console.log(row);
+			</div>
+			<div {...getTableBodyProps()} className="body">
+				{rows.map(row => {
 					prepareRow(row);
 					return (
-						<tr {...row.getRowProps()}>
-							{row.cells.map(cell => {
-								// console.log(cell);
-								return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-							})}
-						</tr>
+						<div {...row.getRowProps()} className="tr">
+							{row.cells.map(cell => (
+								<div {...cell.getCellProps()} className="td">
+									{cell.render('Cell')}
+								</div>
+							))}
+						</div>
 					);
 				})}
-			</tbody>
-		</table>
+			</div>
+			{/* set selected rows */}
+			{setSelectedRows(selectedFlatRows)}
+		</div>
 	);
 };
 
@@ -97,17 +219,12 @@ interface FridgeItemTableProps {
 
 const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const router = useRouter();
+	const [selectedRows, setSelectedRows] = useState(null);
+	const { colorMode } = useColorMode();
+	const isDark = colorMode === 'dark';
 
 	const centeredText = (text: string) => {
-		return (
-			<div
-				style={{
-					textAlign: 'center',
-				}}
-			>
-				{text}
-			</div>
-		);
+		return <Center style={{ height: '100%' }}>{text}</Center>;
 	};
 
 	const columns = useMemo(
@@ -138,11 +255,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				Cell: (props: any) => {
 					if (props.row.original.name)
 						return (
-							<div
-								style={{
-									textAlign: 'center',
-								}}
-							>
+							<Center style={{ height: '100%' }}>
 								<NextLink
 									href={`/fridges/editFridgeItem?itemId=${props.row.original.id}&itemInfoId=${props.row.original.infoId}`}
 									passHref
@@ -151,7 +264,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 										{props.row.original.name} <EditIcon />
 									</Link>
 								</NextLink>
-							</div>
+							</Center>
 						);
 
 					return centeredText('-');
@@ -196,21 +309,15 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const data = useMemo(props.data ? props.data : noData, []);
 
 	useEffect(() => {}, []);
+
 	return (
 		<Box>
-			<Center>
-				<Box
-					as="button"
-					mr="8"
-					mb="4"
-					p="2"
-					color="white"
-					fontWeight="bold"
-					borderRadius="md"
-					bgGradient="linear(to-r, teal.500, green.500)"
-					_hover={{
-						bgGradient: 'linear(to-r, red.500, yellow.500)',
-					}}
+			<Center mt={4}>
+				<Button
+					mb={4}
+					mr={4}
+					colorScheme="teal"
+					border="2px"
 					onClick={() => {
 						router.push({
 							pathname: `/fridges/createFridgeItem`,
@@ -218,44 +325,30 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 						});
 					}}
 				>
-					New Fridge Item
-				</Box>
-
-				<Box
-					as="button"
-					mr="8"
-					mb="4"
-					p="2"
-					color="white"
-					fontWeight="bold"
-					borderRadius="md"
-					bgGradient="linear(to-r, teal.500, green.500)"
-					_hover={{
-						bgGradient: 'linear(to-r, red.500, yellow.500)',
+					Add fridge item
+				</Button>
+				<Button
+					mb={4}
+					variant="outline"
+					colorScheme="red"
+					border="2px"
+					onClick={() => {
+						console.log(selectedRows);
 					}}
 				>
 					Delete Selected
-				</Box>
-
-				<Box
-					as="button"
-					mr="8"
-					mb="4"
-					p="2"
-					color="white"
-					fontWeight="bold"
-					borderRadius="md"
-					bgGradient="linear(to-r, teal.500, green.500)"
-					_hover={{
-						bgGradient: 'linear(to-r, red.500, yellow.500)',
-					}}
-				>
-					Clear Fridge
-				</Box>
+				</Button>
 			</Center>
-			<Styles key={props.rerenderTime}>
-				<Table columns={columns} data={data} key={props.rerenderTime} />
-			</Styles>
+			<Center>
+				<Styles isDark={isDark} key={props.rerenderTime}>
+					<Table
+						columns={columns}
+						data={data}
+						setSelectedRows={setSelectedRows}
+						key={props.rerenderTime}
+					/>
+				</Styles>
+			</Center>
 		</Box>
 	);
 };

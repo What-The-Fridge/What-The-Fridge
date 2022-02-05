@@ -1,5 +1,6 @@
 import { InfoIcon } from '@chakra-ui/icons';
 import {
+	Box,
 	Center,
 	Popover,
 	PopoverArrow,
@@ -20,17 +21,19 @@ export const CustomPopover: React.FC<CustomPopoverProps> = (
 ): JSX.Element => {
 	return (
 		<Center>
-			<Popover>
-				<PopoverTrigger>
-					<InfoIcon />
-				</PopoverTrigger>
-				<PopoverContent>
-					<PopoverArrow />
-					<PopoverCloseButton />
-					<PopoverHeader>{props.header}</PopoverHeader>
-					<PopoverBody>{props.body}</PopoverBody>
-				</PopoverContent>
-			</Popover>
+			<Box as="button" type="button">
+				<Popover>
+					<PopoverTrigger>
+						<InfoIcon />
+					</PopoverTrigger>
+					<PopoverContent>
+						<PopoverArrow />
+						<PopoverCloseButton />
+						<PopoverHeader>{props.header}</PopoverHeader>
+						<PopoverBody>{props.body}</PopoverBody>
+					</PopoverContent>
+				</Popover>
+			</Box>
 		</Center>
 	);
 };
