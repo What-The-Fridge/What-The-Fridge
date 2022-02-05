@@ -124,6 +124,7 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 						Delete Fridge
 					</Button>
 				</Box>
+
 			</Box>
 		);
 	};
@@ -136,7 +137,24 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 
 		// TODO: There are other errors even if its a successful fetch
 		if (fridgeItems?.getFridgeFridgeItems.fridgeItems?.length === 0)
-			return <Text>This fridge is empty👀</Text>;
+			return (
+				<Box display={'flex'} flexDirection="column" alignItems="center" >
+
+					<Text>This fridge is empty👀</Text>
+					<Button
+						mt={8/4}
+						variant="outline"
+						colorScheme="teal"
+						border="2px"
+						icon={<AddIcon />}
+						onClick={() => {
+							router.push(`/fridges/createFridgeItem?fridgeId=${fridgeId}`)
+						}}
+					>
+					Add First Fridge Item
+					</Button>
+				</Box>
+			)
 
 		let fetchedTableData: TableData[] = [];
 		fridgeItems?.getFridgeFridgeItems.fridgeItems?.map(element => {
