@@ -124,7 +124,6 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 						Delete Fridge
 					</Button>
 				</Box>
-
 			</Box>
 		);
 	};
@@ -146,12 +145,11 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 						variant="outline"
 						colorScheme="teal"
 						border="2px"
-						icon={<AddIcon />}
 						onClick={() => {
 							router.push(`/fridges/createFridgeItem?fridgeId=${fridgeId}`)
 						}}
 					>
-					Add First Fridge Item
+						Add First Fridge Item
 					</Button>
 				</Box>
 			)
