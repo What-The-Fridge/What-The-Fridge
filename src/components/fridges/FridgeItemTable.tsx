@@ -1,7 +1,13 @@
 // code snippet from React-Table package. minor modification has been done
 import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { useTable, useRowSelect, useBlockLayout } from 'react-table';
+import {
+	useTable,
+	useRowSelect,
+	useBlockLayout,
+	usePagination,
+	useSortBy,
+} from 'react-table';
 import {
 	Box,
 	Button,
@@ -17,6 +23,13 @@ import { EditIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useSticky } from 'react-table-sticky';
 import { useDeleteFridgeItemMutation } from '../../generated/graphql';
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import {
+	FiChevronLeft,
+	FiChevronRight,
+	FiChevronsLeft,
+	FiChevronsRight,
+} from 'react-icons/fi';
 
 interface TableStyleProps {
 	isDark: boolean;
@@ -25,6 +38,8 @@ interface TableStyleProps {
 const Styles = styled.div<TableStyleProps>`
 	.table {
 		border: 1px solid #ddd;
+		max-height: 500px;
+		overflow: auto;
 
 		.tr {
 			:last-child {
@@ -58,7 +73,6 @@ const Styles = styled.div<TableStyleProps>`
 		}
 
 		&.sticky {
-			overflow: auto;
 			.header,
 			.footer {
 				position: sticky;
@@ -68,7 +82,7 @@ const Styles = styled.div<TableStyleProps>`
 
 			.header {
 				top: 0;
-				/* box-shadow: 0px 3px 3px #ccc; */
+				box-shadow: 0px 3px 3px #ccc;
 			}
 
 			.footer {
@@ -111,11 +125,7 @@ const IndeterminateCheckbox = React.forwardRef<HTMLInputElement, Props>(
 			}
 		}, [resolvedRef, indeterminate]);
 
-		return (
-			<>
-				<input type="checkbox" ref={resolvedRef} {...rest} />
-			</>
-		);
+		return <input type="checkbox" ref={resolvedRef} {...rest} />;
 	}
 );
 
@@ -131,15 +141,25 @@ const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
 		getTableProps,
 		getTableBodyProps,
 		headerGroups,
-		rows,
 		prepareRow,
+		page,
+		canPreviousPage,
+		canNextPage,
+		pageOptions,
+		pageCount,
+		gotoPage,
+		nextPage,
+		previousPage,
+		setPageSize,
 		selectedFlatRows,
-		state: { selectedRowIds },
+		state: { pageIndex, pageSize, selectedRowIds },
 	} = useTable(
 		{
 			columns,
 			data,
 		},
+		useSortBy,
+		usePagination,
 		useBlockLayout,
 		useSticky,
 		useRowSelect,
@@ -170,35 +190,109 @@ const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
 
 	// Render the UI for your table
 	return (
-		<div {...getTableProps()} className="table sticky" style={{ height: 500 }}>
-			<div className="header">
-				{headerGroups.map(headerGroup => (
-					<div {...headerGroup.getHeaderGroupProps()} className="tr">
-						{headerGroup.headers.map(column => (
-							<div {...column.getHeaderProps()} className="th">
-								{column.render('Header')}
-							</div>
-						))}
-					</div>
-				))}
-			</div>
-			<div {...getTableBodyProps()} className="body">
-				{rows.map(row => {
-					prepareRow(row);
-					return (
-						<div {...row.getRowProps()} className="tr">
-							{row.cells.map(cell => (
-								<div {...cell.getCellProps()} className="td">
-									{cell.render('Cell')}
+		<>
+			<div {...getTableProps()} className="table sticky">
+				{/* set selected rows */}
+				{setSelectedRows(selectedFlatRows)}
+				<div className="header">
+					{headerGroups.map(headerGroup => (
+						<div {...headerGroup.getHeaderGroupProps()} className="tr">
+							{headerGroup.headers.map(column => (
+								<div
+									{...column.getHeaderProps(column.getSortByToggleProps())}
+									className="th"
+								>
+									<Center>
+										{column.render('Header')}
+										{/* Add a sort direction indicator */}
+										<span>
+											{column.isSorted ? (
+												column.isSortedDesc ? (
+													<FaSortDown />
+												) : (
+													<FaSortUp />
+												)
+											) : column.id !== 'selection' ? (
+												<FaSort />
+											) : (
+												''
+											)}
+										</span>
+									</Center>
 								</div>
 							))}
 						</div>
-					);
-				})}
+					))}
+				</div>
+				<div {...getTableBodyProps()} className="body">
+					{page.map((row, i) => {
+						prepareRow(row);
+						return (
+							<div {...row.getRowProps()} className="tr">
+								{row.cells.map(cell => (
+									<div {...cell.getCellProps()} className="td">
+										{cell.render('Cell')}
+									</div>
+								))}
+							</div>
+						);
+					})}
+				</div>
 			</div>
-			{/* set selected rows */}
-			{setSelectedRows(selectedFlatRows)}
-		</div>
+			{/* 
+        Pagination can be built however you'd like. 
+        This is just a very basic UI implementation:
+      */}
+			<Center mt={8 / 2}>
+				<div className="pagination">
+					<Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+						<FiChevronsLeft />
+					</Button>{' '}
+					<Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+						<FiChevronLeft />
+					</Button>{' '}
+					<Button onClick={() => nextPage()} disabled={!canNextPage}>
+						<FiChevronRight />
+					</Button>{' '}
+					<Button
+						onClick={() => gotoPage(pageCount - 1)}
+						disabled={!canNextPage}
+					>
+						<FiChevronsRight />
+					</Button>{' '}
+					<span>
+						Page{' '}
+						<strong>
+							{pageIndex + 1} of {pageOptions.length}
+						</strong>{' '}
+					</span>
+					<span>
+						| Go to page:{' '}
+						<input
+							type="number"
+							defaultValue={pageIndex + 1}
+							onChange={e => {
+								const page = e.target.value ? Number(e.target.value) - 1 : 0;
+								gotoPage(page);
+							}}
+							style={{ width: '100px' }}
+						/>
+					</span>{' '}
+					<select
+						value={pageSize}
+						onChange={e => {
+							setPageSize(Number(e.target.value));
+						}}
+					>
+						{[5, 10, 20, 30, 40, 50].map(pageSize => (
+							<option key={pageSize} value={pageSize}>
+								Show {pageSize}
+							</option>
+						))}
+					</select>
+				</div>
+			</Center>
+		</>
 	);
 };
 
@@ -314,10 +408,20 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 
 	return (
 		<Box>
-			<Center mt={4}>
+			<Center>
+				<Styles isDark={isDark} key={props.rerenderTime}>
+					<Table
+						columns={columns}
+						data={data}
+						setSelectedRows={setSelectedRows}
+						key={props.rerenderTime}
+					/>
+				</Styles>
+			</Center>
+			<Center mt={8 / 2}>
 				<Button
-					mb={4}
-					mr={4}
+					mb={8 / 2}
+					mr={8 / 2}
 					colorScheme="teal"
 					border="2px"
 					onClick={() => {
@@ -330,26 +434,18 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					Add fridge item
 				</Button>
 				<Button
-					mb={4}
+					mb={8 / 2}
 					variant="outline"
 					colorScheme="red"
 					border="2px"
 					onClick={() => {
-						selectedRows.forEach(element => deleteFridgeItem({itemId: element.original.id}));
+						selectedRows.forEach(element =>
+							deleteFridgeItem({ itemId: element.original.id })
+						);
 					}}
 				>
 					Delete Selected
 				</Button>
-			</Center>
-			<Center>
-				<Styles isDark={isDark} key={props.rerenderTime}>
-					<Table
-						columns={columns}
-						data={data}
-						setSelectedRows={setSelectedRows}
-						key={props.rerenderTime}
-					/>
-				</Styles>
 			</Center>
 		</Box>
 	);
