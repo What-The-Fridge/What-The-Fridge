@@ -4,6 +4,7 @@ import {
 	useCreateFridgeItemMutation,
 	useDeleteFridgeItemMutation,
 	useGetAllMeasurementTypesQuery,
+	useGetFridgeItemByIdQuery,
 } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { useAppContext } from '../../utils/context';
@@ -34,11 +35,11 @@ interface CreateFridgeItemProps {}
 
 export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
-	const [, deleteFridgeItem] = useDeleteFridgeItemMutation();
-	const value = useAppContext();
 
+	const value = useAppContext();
 	const router = useRouter();
 	const isCreation = router.query.fridgeItem === 'createFridgeItem';
+
 	console.log(isCreation);
 	console.log(router.query);
 
@@ -51,6 +52,44 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	] = useGetAllMeasurementTypesQuery({
 		variables: {},
 	});
+
+	// TODO: shouldn't execute this if router.query.itemId is undefined
+	let [
+		{
+			data: fridgeItemById,
+			fetching: fetchingFridgeItemById,
+			error: fridgeItemByIdError,
+		},
+	] = useGetFridgeItemByIdQuery({
+		variables: {
+			getFridgeItemByIdId: router.query.itemId
+				? parseInt(router.query.itemId as string)
+				: 0,
+		},
+	});
+
+	console.log(fridgeItemById);
+
+	// let formInitialValues =
+	// 	fridgeItemById?.getFridgeItemById.errors !== null
+	// 		? {
+	// 				name: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.name,
+	// 				quantity: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.quantity,
+	// 				unit: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.measurementUnit,
+	// 				upc: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.upc,
+	// 				file: '',
+	// 				purchasedDate: '',
+	// 				expiryDate: '',
+	// 		  }
+	// 		: {
+	// 				name: '',
+	// 				quantity: '1',
+	// 				unit: '1',
+	// 				upc: '',
+	// 				file: '',
+	// 				purchasedDate: '',
+	// 				expiryDate: '',
+	// 		  };
 
 	const renderUnits = () => {
 		if (!measurementTypes && fetchingMeasurements)
@@ -125,19 +164,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			} else if (response.data?.createFridgeItem.detailedFridgeItem) {
 				// upon successful creating an account
 				alert('successful!');
-			}
-		});
-	};
-
-	const deleteFridgeItemSubmission = async () => {
-		deleteFridgeItem({
-			itemId: parseInt(router.query.itemId as string),
-		}).then(response => {
-			if (response.data?.deleteFridgeItem.errors) {
-				alert('error deleting the item');
-			} else if (response.data?.deleteFridgeItem.success) {
-				alert('successfully deleted the item');
-				router.push('/fridges');
 			}
 		});
 	};
@@ -262,21 +288,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 								>
 									{isCreation ? 'Submit' : 'Update'}
 								</Button>
-								{!isCreation ? (
-									<Button
-										onClick={() => {
-											deleteFridgeItemSubmission();
-										}}
-										variant="outline"
-										colorScheme="red"
-										border="2px"
-									>
-										Delete
-									</Button>
-								) : null}
 								<Button
 									variant="outline"
-									colorScheme="orange"
+									colorScheme="red"
 									border="2px"
 									onClick={() => {
 										router.push('/fridges');

@@ -95,6 +95,9 @@ const NavigationMenu: React.FC<NavigationMenuProps> = (props): JSX.Element => {
 						</Button>
 					)}
 				</MenuItem>
+				<MenuItem>
+					<DarkModeSwitch />
+				</MenuItem>
 			</MenuList>
 		</Menu>
 	);
@@ -167,10 +170,10 @@ export const Navbar: React.FC<NavbarProps> = (props): JSX.Element => {
 							</NextLink>
 						</Button>
 					)}
+					<DarkModeSwitch />
 				</Stack>
 
 				<Box flex={1} align="right">
-					<DarkModeSwitch />
 					<Box ml={2} display={{ base: 'inline-block', md: 'none' }}>
 						<NavigationMenu path={props.path} logout={logout} user={user} />
 					</Box>

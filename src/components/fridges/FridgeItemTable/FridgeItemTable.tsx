@@ -1,6 +1,4 @@
-// code snippet from React-Table package. minor modification has been done
 import React, { useEffect, useMemo, useState } from 'react';
-import styled, { css } from 'styled-components';
 import {
 	useTable,
 	useRowSelect,
@@ -12,17 +10,18 @@ import {
 	Box,
 	Button,
 	Center,
-	Container,
-	Divider,
+	HStack,
 	Image,
+	Input,
 	Link,
+	Select,
 	useColorMode,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { EditIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useSticky } from 'react-table-sticky';
-import { useDeleteFridgeItemMutation } from '../../generated/graphql';
+import { useDeleteFridgeItemMutation } from '../../../generated/graphql';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import {
 	FiChevronLeft,
@@ -30,85 +29,8 @@ import {
 	FiChevronsLeft,
 	FiChevronsRight,
 } from 'react-icons/fi';
+import { Styles } from './TableStyles';
 
-interface TableStyleProps {
-	isDark: boolean;
-}
-
-const Styles = styled.div<TableStyleProps>`
-	.table {
-		border: 1px solid #ddd;
-		max-height: 500px;
-		overflow: auto;
-
-		.tr {
-			:last-child {
-				.td {
-					border-bottom: 0;
-				}
-			}
-		}
-
-		.th,
-		.td {
-			padding: 5px;
-			border-bottom: 1px solid #ddd;
-			border-right: 1px solid #ddd;
-			${({ isDark }) =>
-				isDark &&
-				css`
-					background: #222a3a;
-				`}
-
-			${({ isDark }) =>
-				!isDark &&
-				css`
-					background: #fff;
-				`}
-			overflow: hidden;
-
-			:last-child {
-				border-right: 0;
-			}
-		}
-
-		&.sticky {
-			.header,
-			.footer {
-				position: sticky;
-				z-index: 1;
-				width: fit-content;
-			}
-
-			.header {
-				top: 0;
-				box-shadow: 0px 3px 3px #ccc;
-			}
-
-			.footer {
-				bottom: 0;
-				box-shadow: 0px -3px 3px #ccc;
-			}
-
-			.body {
-				position: relative;
-				z-index: 0;
-			}
-
-			[data-sticky-td] {
-				position: sticky;
-			}
-
-			[data-sticky-last-left-td] {
-				box-shadow: 2px 0px 3px #ccc;
-			}
-
-			[data-sticky-first-right-td] {
-				box-shadow: -2px 0px 3px #ccc;
-			}
-		}
-	}
-`;
 interface Props {
 	indeterminate?: boolean;
 }
@@ -244,7 +166,7 @@ const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
         This is just a very basic UI implementation:
       */}
 			<Center mt={8 / 2}>
-				<div className="pagination">
+				<HStack className="pagination">
 					<Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
 						<FiChevronsLeft />
 					</Button>{' '}
@@ -260,37 +182,39 @@ const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
 					>
 						<FiChevronsRight />
 					</Button>{' '}
-					<span>
+					<Box>
 						Page{' '}
 						<strong>
 							{pageIndex + 1} of {pageOptions.length}
 						</strong>{' '}
-					</span>
-					<span>
+					</Box>
+					<Box>
 						| Go to page:{' '}
-						<input
+						<Input
 							type="number"
 							defaultValue={pageIndex + 1}
 							onChange={e => {
 								const page = e.target.value ? Number(e.target.value) - 1 : 0;
 								gotoPage(page);
 							}}
-							style={{ width: '100px' }}
+							style={{ width: '60px' }}
 						/>
-					</span>{' '}
-					<select
-						value={pageSize}
-						onChange={e => {
-							setPageSize(Number(e.target.value));
-						}}
-					>
-						{[5, 10, 20, 30, 40, 50].map(pageSize => (
-							<option key={pageSize} value={pageSize}>
-								Show {pageSize}
-							</option>
-						))}
-					</select>
-				</div>
+					</Box>{' '}
+					<Box width="110px">
+						<Select
+							value={pageSize}
+							onChange={e => {
+								setPageSize(Number(e.target.value));
+							}}
+						>
+							{[5, 10, 20, 30, 40, 50].map(pageSize => (
+								<option key={pageSize} value={pageSize}>
+									Show {pageSize}
+								</option>
+							))}
+						</Select>
+					</Box>
+				</HStack>
 			</Center>
 		</>
 	);
@@ -350,19 +274,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				accessor: 'name',
 				Cell: (props: any) => {
 					if (props.row.original.name)
-						return (
-							<Center style={{ height: '100%' }}>
-								<NextLink
-									href={`/fridges/editFridgeItem?itemId=${props.row.original.id}&itemInfoId=${props.row.original.infoId}`}
-									passHref
-								>
-									<Link>
-										{props.row.original.name} <EditIcon />
-									</Link>
-								</NextLink>
-							</Center>
-						);
-
+						return centeredText(props.row.original.name);
 					return centeredText('-');
 				},
 			},
@@ -435,6 +347,26 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				</Button>
 				<Button
 					mb={8 / 2}
+					mr={8 / 2}
+					disabled={selectedRows.length != 1}
+					variant="outline"
+					colorScheme="orange"
+					border="2px"
+					onClick={() => {
+						localStorage.setItem(
+							'fridgeItem',
+							JSON.stringify(selectedRows[0].original)
+						);
+						router.push(
+							`/fridges/editFridgeItem?itemId=${selectedRows[0].original.id}&itemInfoId=${selectedRows[0].original.infoId}`
+						);
+					}}
+				>
+					Edit Selected
+				</Button>
+				<Button
+					mb={8 / 2}
+					disabled={selectedRows.length == 0}
 					variant="outline"
 					colorScheme="red"
 					border="2px"

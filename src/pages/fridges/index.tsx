@@ -13,7 +13,7 @@ import { Button, Select } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import FridgeItemTable, {
 	TableData,
-} from '../../components/fridges/FridgeItemTable';
+} from '../../components/fridges/FridgeItemTable/FridgeItemTable';
 import { useRouter } from 'next/router';
 
 interface CreateFridgeProps {}
@@ -93,6 +93,7 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 		return (
 			<Box display={'flex'} flexDirection="row" alignItems="center">
 				<Select
+					variant="filled"
 					onChange={(event: any) => {
 						if (event.target.selectedOptions[0].value != 'createNewFridge') {
 							setSelectedFridge(event.target.selectedOptions[0].value);
@@ -137,22 +138,21 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 		// TODO: There are other errors even if its a successful fetch
 		if (fridgeItems?.getFridgeFridgeItems.fridgeItems?.length === 0)
 			return (
-				<Box display={'flex'} flexDirection="column" alignItems="center" >
-
+				<Box display={'flex'} flexDirection="column" alignItems="center">
 					<Text>This fridge is empty👀</Text>
 					<Button
-						mt={8/4}
+						mt={8 / 4}
 						variant="outline"
 						colorScheme="teal"
 						border="2px"
 						onClick={() => {
-							router.push(`/fridges/createFridgeItem?fridgeId=${fridgeId}`)
+							router.push(`/fridges/createFridgeItem?fridgeId=${fridgeId}`);
 						}}
 					>
 						Add First Fridge Item
 					</Button>
 				</Box>
-			)
+			);
 
 		let fetchedTableData: TableData[] = [];
 		fridgeItems?.getFridgeFridgeItems.fridgeItems?.map(element => {
