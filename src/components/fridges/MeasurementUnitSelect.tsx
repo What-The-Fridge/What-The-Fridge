@@ -4,6 +4,7 @@ import * as React from 'react';
 
 type MeasurementUnitSelectProps = {
 	units: { name: string; id: number }[];
+	defaultOption: number;
 };
 
 export const MeasurementUnitSelect = (props: MeasurementUnitSelectProps) => (
@@ -19,7 +20,11 @@ export const MeasurementUnitSelect = (props: MeasurementUnitSelectProps) => (
 				>
 					{props.units!.map((unit: any) => {
 						return (
-							<option value={unit.id} id={unit.id}>
+							<option
+								value={unit.id}
+								id={unit.id}
+								selected={props.defaultOption === unit.id}
+							>
 								{unit.name}
 							</option>
 						);

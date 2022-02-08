@@ -141,6 +141,7 @@ export type Mutation = {
   deleteFridgeItem: BooleanResponse;
   deleteUser: BooleanResponse;
   transferFridgeOwner: BooleanResponse;
+  updateFridgeItem: BooleanResponse;
 };
 
 
@@ -195,6 +196,12 @@ export type MutationDeleteUserArgs = {
 export type MutationTransferFridgeOwnerArgs = {
   fridgeId: Scalars['Float'];
   newOwnerId: Scalars['Float'];
+};
+
+
+export type MutationUpdateFridgeItemArgs = {
+  fridgeItemId: Scalars['Float'];
+  input: FridgeItemInput;
 };
 
 export type Query = {
@@ -305,6 +312,14 @@ export type DeleteFridgeItemMutationVariables = Exact<{
 
 
 export type DeleteFridgeItemMutation = { __typename?: 'Mutation', deleteFridgeItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
+
+export type UpdateFridgeItemMutationVariables = Exact<{
+  fridgeItemId: Scalars['Float'];
+  input: FridgeItemInput;
+}>;
+
+
+export type UpdateFridgeItemMutation = { __typename?: 'Mutation', updateFridgeItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
 
 export type GetAllMeasurementTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -443,6 +458,21 @@ export const DeleteFridgeItemDocument = gql`
 
 export function useDeleteFridgeItemMutation() {
   return Urql.useMutation<DeleteFridgeItemMutation, DeleteFridgeItemMutationVariables>(DeleteFridgeItemDocument);
+};
+export const UpdateFridgeItemDocument = gql`
+    mutation UpdateFridgeItem($fridgeItemId: Float!, $input: FridgeItemInput!) {
+  updateFridgeItem(fridgeItemId: $fridgeItemId, input: $input) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}
+    `;
+
+export function useUpdateFridgeItemMutation() {
+  return Urql.useMutation<UpdateFridgeItemMutation, UpdateFridgeItemMutationVariables>(UpdateFridgeItemDocument);
 };
 export const GetAllMeasurementTypesDocument = gql`
     query GetAllMeasurementTypes {

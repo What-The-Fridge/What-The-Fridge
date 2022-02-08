@@ -357,9 +357,13 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 							'fridgeItem',
 							JSON.stringify(selectedRows[0].original)
 						);
-						router.push(
-							`/fridges/editFridgeItem?itemId=${selectedRows[0].original.id}&itemInfoId=${selectedRows[0].original.infoId}`
-						);
+						router.push({
+							pathname: `/fridges/editFridgeItem`,
+							query: {
+								fridgeId: props.fridgeId,
+								itemId: selectedRows[0].original.id,
+							},
+						});
 					}}
 				>
 					Edit Selected

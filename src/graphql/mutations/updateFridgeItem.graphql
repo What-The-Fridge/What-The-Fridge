@@ -1,0 +1,9 @@
+mutation UpdateFridgeItem($fridgeItemId: Float!, $input: FridgeItemInput!) {
+  updateFridgeItem(fridgeItemId: $fridgeItemId, input: $input) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}

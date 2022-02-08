@@ -1,10 +1,10 @@
 import { withUrqlClient } from 'next-urql';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	useCreateFridgeItemMutation,
-	useDeleteFridgeItemMutation,
 	useGetAllMeasurementTypesQuery,
 	useGetFridgeItemByIdQuery,
+	useUpdateFridgeItemMutation,
 } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { useAppContext } from '../../utils/context';
@@ -12,6 +12,7 @@ import { Layout } from '../../components/Layout';
 import {
 	Box,
 	Button,
+	Center,
 	Heading,
 	HStack,
 	Stack,
@@ -32,16 +33,36 @@ import { toErrorMap } from '../../components/ToErrorMap';
 import { CustomDatePicker } from '../../components/CustomDatePicker';
 
 interface CreateFridgeItemProps {}
+interface FormInitialValues {
+	name: string;
+	quantity: string;
+	unit: string;
+	upc: string;
+	file: string;
+	purchasedDate: string;
+	expiryDate: string;
+}
 
 export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
+	const [, updateFridgeItem] = useUpdateFridgeItemMutation();
+	const [rerenderForm, setRerenderForm] = useState(0);
+
+	const [formInitialValues, setFormInitialValues] = useState<FormInitialValues>(
+		{
+			name: '',
+			quantity: '1',
+			unit: '1',
+			upc: '',
+			file: '',
+			purchasedDate: '',
+			expiryDate: '',
+		}
+	);
 
 	const value = useAppContext();
 	const router = useRouter();
 	const isCreation = router.query.fridgeItem === 'createFridgeItem';
-
-	console.log(isCreation);
-	console.log(router.query);
 
 	let [
 		{
@@ -68,28 +89,32 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		},
 	});
 
-	console.log(fridgeItemById);
-
-	// let formInitialValues =
-	// 	fridgeItemById?.getFridgeItemById.errors !== null
-	// 		? {
-	// 				name: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.name,
-	// 				quantity: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.quantity,
-	// 				unit: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.measurementUnit,
-	// 				upc: fridgeItemById?.getFridgeItemById.detailedFridgeItem?.upc,
-	// 				file: '',
-	// 				purchasedDate: '',
-	// 				expiryDate: '',
-	// 		  }
-	// 		: {
-	// 				name: '',
-	// 				quantity: '1',
-	// 				unit: '1',
-	// 				upc: '',
-	// 				file: '',
-	// 				purchasedDate: '',
-	// 				expiryDate: '',
-	// 		  };
+	useEffect(() => {
+		let detailedFridgeItem =
+			fridgeItemById?.getFridgeItemById.detailedFridgeItem;
+		if (fridgeItemById?.getFridgeItemById.errors === null) {
+			setFormInitialValues({
+				name: detailedFridgeItem?.name ? detailedFridgeItem?.name : '',
+				quantity:
+					detailedFridgeItem?.quantity !== undefined
+						? detailedFridgeItem?.quantity.toString()
+						: '1',
+				unit:
+					detailedFridgeItem?.measurementTypeId !== undefined
+						? detailedFridgeItem?.measurementTypeId.toString()
+						: '1',
+				upc: detailedFridgeItem?.upc ? detailedFridgeItem?.upc : '',
+				file: detailedFridgeItem?.imgUrl ? detailedFridgeItem?.imgUrl : '',
+				purchasedDate: detailedFridgeItem?.purchasedDate
+					? detailedFridgeItem?.purchasedDate
+					: '',
+				expiryDate: detailedFridgeItem?.expiryDate
+					? detailedFridgeItem?.expiryDate
+					: '',
+			});
+			setRerenderForm(rerenderForm + 1);
+		}
+	}, [fridgeItemById, measurementTypes]);
 
 	const renderUnits = () => {
 		if (!measurementTypes && fetchingMeasurements)
@@ -114,12 +139,19 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			}
 		);
 
-		return <MeasurementUnitSelect units={measurements} />;
+		return (
+			<MeasurementUnitSelect
+				units={measurements}
+				defaultOption={parseInt(formInitialValues.unit)}
+			/>
+		);
 	};
 
 	const uploadFileToFirebase = async (file: File): Promise<null | string> => {
 		let imgURL = null;
 		if (!file) return imgURL;
+		// TODO: find a better filter, this is when the input is not a file
+		if (!file.size) return file as unknown as string;
 		const userEmail = value[0].email;
 		const currTime = Date.now();
 		const storageRef = ref(
@@ -145,28 +177,67 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		imgUrl: string | null,
 		setErrors: any
 	): Promise<void> => {
-		await createFridgeItem({
-			input: {
-				fridgeId: parseInt(router.query.fridgeId as string),
-				measurementTypeId: parseInt(values.unit),
-				name: values.name,
-				quantity: parseInt(values.quantity),
-				userId: value[0].id,
-				imgUrl: imgUrl,
-				upc: values.upc == '' ? null : values.upc,
-				purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
-				expiryDate: values.expiryDate == '' ? null : values.expiryDate,
-			},
-		}).then(response => {
-			if (response.data?.createFridgeItem.errors) {
-				alert('error!');
-				setErrors(toErrorMap(response.data.createFridgeItem.errors));
-			} else if (response.data?.createFridgeItem.detailedFridgeItem) {
-				// upon successful creating an account
-				alert('successful!');
-			}
-		});
+		const fridgeItemInput = {
+			fridgeId: parseInt(router.query.fridgeId as string),
+			measurementTypeId: parseInt(values.unit),
+			name: values.name,
+			quantity: parseInt(values.quantity),
+			userId: value[0].id,
+			imgUrl: imgUrl,
+			upc: values.upc == '' ? null : values.upc,
+			purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
+			expiryDate: values.expiryDate == '' ? null : values.expiryDate,
+		};
+		console.log(fridgeItemInput);
+		if (isCreation) {
+			await createFridgeItem({
+				input: fridgeItemInput,
+			}).then(response => {
+				if (response.data?.createFridgeItem.errors) {
+					alert('error!');
+					setErrors(toErrorMap(response.data.createFridgeItem.errors));
+				} else if (response.data?.createFridgeItem.detailedFridgeItem) {
+					// upon successful creating an account
+					alert('successful!');
+				}
+			});
+		} else {
+			await updateFridgeItem({
+				input: fridgeItemInput,
+				// TODO: HANDLE CASES WHERE itemId is not passed
+				fridgeItemId: parseInt(router.query.itemId as string),
+			}).then(response => {
+				console.log(response);
+				if (response.data?.updateFridgeItem.errors) {
+					alert('error!');
+					setErrors(toErrorMap(response.data.updateFridgeItem.errors));
+				} else if (response.data?.updateFridgeItem.success) {
+					// upon successful creating an account
+					alert('successful!');
+				}
+			});
+		}
 	};
+
+	// TODO: make this a loading component and reuse on other pages
+	if (fetchingMeasurements && fetchingFridgeItemById) {
+		return (
+			<Layout
+				path={`/fridges/createFridgeItem`}
+				fridgeId={parseInt(router.query.fridgeId as string)}
+			>
+				<Center>
+					<Button
+						isLoading
+						loadingText="Loading"
+						colorScheme="teal"
+						variant="outline"
+						spinnerPlacement="start"
+					/>
+				</Center>
+			</Layout>
+		);
+	}
 
 	return (
 		<Layout
@@ -174,15 +245,8 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			fridgeId={parseInt(router.query.fridgeId as string)}
 		>
 			<Formik
-				initialValues={{
-					name: '',
-					quantity: '1',
-					unit: '1',
-					upc: '',
-					file: '',
-					purchasedDate: '',
-					expiryDate: '',
-				}}
+				key={rerenderForm}
+				initialValues={formInitialValues}
 				onSubmit={async (values, { setErrors }) => {
 					// TODO: Validation for the users(Invalid inputs)
 					let imgUrl = await uploadFileToFirebase(
@@ -242,10 +306,15 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										setFieldValue={props.setFieldValue}
 										name="purchasedDate"
 										value="purchasedDate"
-										InfoPopOver={{
+										infoPopOver={{
 											header: 'Warning',
 											body: 'Default purchased date is set today',
 										}}
+										selectedDate={
+											formInitialValues.purchasedDate !== ''
+												? new Date(parseInt(formInitialValues.purchasedDate))
+												: undefined
+										}
 									/>
 
 									<CustomDatePicker
@@ -253,10 +322,15 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										setFieldValue={props.setFieldValue}
 										name="expiryDate"
 										value="expiryDate"
-										InfoPopOver={{
+										infoPopOver={{
 											header: 'Warning',
 											body: 'Default expiry date is set to 7 days from now',
 										}}
+										selectedDate={
+											formInitialValues.expiryDate !== ''
+												? new Date(parseInt(formInitialValues.expiryDate))
+												: undefined
+										}
 									/>
 
 									<Box>
@@ -266,6 +340,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 												label="Image upload"
 												accept="image/png, image/jpeg, image/gif"
 												setFieldValue={props.setFieldValue}
+												thumbnail={formInitialValues.file}
 											/>
 										</HStack>
 										<Text

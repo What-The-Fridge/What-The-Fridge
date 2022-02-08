@@ -10,7 +10,8 @@ type CustomDatePickerProps = InputHTMLAttributes<HTMLInputElement> & {
 	label: string;
 	setFieldValue: Function;
 	value: string;
-	InfoPopOver?: any;
+	infoPopOver?: any;
+	selectedDate?: Date;
 	name: string;
 };
 
@@ -22,10 +23,12 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 }) => {
 	const [field, { error }] = useField(props);
 
-	const [startDate, setStartDate] = useState<Date | null>(new Date());
+	const [defaultStartDate, setStartDate] = useState<Date | null>(
+		props.selectedDate ? props.selectedDate : new Date()
+	);
 
 	useEffect(() => {
-		if (value === 'expiryDate') {
+		if (value === 'expiryDate' && props.selectedDate === undefined) {
 			var weekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
 			setStartDate(new Date(new Date().getTime() + weekInMilliseconds));
 			setFieldValue(
@@ -33,7 +36,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 				new Date(new Date().getTime() + weekInMilliseconds)
 			);
 		} else {
-			setFieldValue(`${value}`, startDate);
+			setFieldValue(`${value}`, defaultStartDate);
 		}
 	}, []);
 
@@ -55,10 +58,10 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 					<FormLabel htmlFor={field.name}>
 						<Box display="flex" flexDirection={'row'} alignItems={'center'}>
 							<Text mr={3}>{label}</Text>
-							{props.InfoPopOver ? (
+							{props.infoPopOver ? (
 								<CustomPopover
-									header={props.InfoPopOver.header}
-									body={props.InfoPopOver.body}
+									header={props.infoPopOver.header}
+									body={props.infoPopOver.body}
 								/>
 							) : null}
 						</Box>
@@ -66,7 +69,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 					<DatePicker
 						wrapperClassName="date_picker full-width"
 						className="colour-mode-style"
-						selected={startDate}
+						selected={defaultStartDate}
 						onChange={date => {
 							setStartDate(date);
 							setFieldValue(`${value}`, date);

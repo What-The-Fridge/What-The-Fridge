@@ -6,6 +6,7 @@ type FileUploadProps = InputHTMLAttributes<HTMLInputElement> & {
 	label: string;
 	name: string;
 	setFieldValue: Function;
+	thumbnail?: string;
 };
 
 export const FileUpload: React.FC<FileUploadProps> = ({
@@ -16,6 +17,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
 	const [field, { error }] = useField(props);
 	const [file, setFile] = useState<undefined | File>(undefined);
+	const [initialThumbnail, setInitialThumbnail] = useState<string | undefined>(
+		props.thumbnail
+	);
 
 	function validateSize(input: any) {
 		if (input.files[0]) {
@@ -54,10 +58,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 						}}
 					/>
 
-					{file ? (
+					{file || initialThumbnail ? (
 						<Box>
 							<Center>
-								<Thumb file={file} />
+								<Thumb file={file} thumbnail={initialThumbnail} />
 								<Button
 									m={3}
 									variant="outline"
@@ -67,7 +71,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 										(
 											document.getElementById(props.name) as HTMLInputElement
 										).value = '';
+										setFieldValue('file', undefined);
 										setFile(undefined);
+										setInitialThumbnail(undefined);
 									}}
 								>
 									X
@@ -83,6 +89,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
 interface ThumbProps {
 	file: any;
+	thumbnail?: string;
 }
 
 class Thumb extends React.Component<ThumbProps> {
@@ -109,9 +116,10 @@ class Thumb extends React.Component<ThumbProps> {
 
 	render() {
 		const { file }: any = this.props;
+		const { thumbnail }: any = this.props;
 		const { loading, thumb } = this.state;
 
-		if (!file) {
+		if (!file && !thumbnail) {
 			return null;
 		}
 
@@ -120,14 +128,16 @@ class Thumb extends React.Component<ThumbProps> {
 		}
 
 		return (
-			<img
-				style={{ margin: 15 }}
-				src={thumb}
-				alt={file.name}
-				className="img-thumbnail mt-2"
-				height={200}
-				width={200}
-			/>
+			<div>
+				<img
+					style={{ margin: 15 }}
+					src={thumb ? thumb : thumbnail}
+					alt={thumb ? file.name : thumbnail}
+					className="img-thumbnail mt-2"
+					height={200}
+					width={200}
+				/>
+			</div>
 		);
 	}
 }
