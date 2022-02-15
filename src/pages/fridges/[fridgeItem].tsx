@@ -188,7 +188,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
 			expiryDate: values.expiryDate == '' ? null : values.expiryDate,
 		};
-		console.log(fridgeItemInput);
+
 		if (isCreation) {
 			await createFridgeItem({
 				input: fridgeItemInput,

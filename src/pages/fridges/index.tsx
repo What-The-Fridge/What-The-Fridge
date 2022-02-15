@@ -15,6 +15,7 @@ import FridgeItemTable, {
 	TableData,
 } from '../../components/fridges/FridgeItemTable/FridgeItemTable';
 import { useRouter } from 'next/router';
+import { toErrorMap } from '../../components/ToErrorMap';
 
 interface CreateFridgeProps {}
 
@@ -118,8 +119,21 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 						variant="outline"
 						colorScheme="red"
 						border="2px"
-						onClick={() => {
-							deleteFridge({ fridgeId: fridgeId });
+						onClick={async () => {
+							await deleteFridge({ fridgeId: fridgeId })
+								.then(response => {
+									if (response.data?.deleteFridge.errors) {
+										alert('error deleting!');
+									} else if (response.data?.deleteFridge.success) {
+										// upon successful deleting a fridge
+										alert('successful!');
+										// reload to show the user the latest changes
+										router.reload();
+									}
+								})
+								.catch(error => {
+									alert('error!' + error.toString());
+								});
 						}}
 					>
 						Delete Fridge

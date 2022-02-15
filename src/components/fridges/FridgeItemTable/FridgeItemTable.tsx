@@ -377,6 +377,19 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					onClick={() => {
 						selectedRows.forEach(element =>
 							deleteFridgeItem({ itemId: element.original.id })
+								.then(response => {
+									if (response.data?.deleteFridgeItem.errors) {
+										alert('error!');
+									} else if (response.data?.deleteFridgeItem.success) {
+										// upon successful creating a fridge
+										alert('successful!');
+										// reload to show the user the latest changes
+										router.reload();
+									}
+								})
+								.catch(error => {
+									alert('error!' + error.toString());
+								})
 						);
 					}}
 				>

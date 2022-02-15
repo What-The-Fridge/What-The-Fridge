@@ -115,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = (props): JSX.Element => {
 			pos="fixed"
 			as="nav"
 			w="100%"
-			zIndex={1}
+			zIndex={2} // must be the highest z-index
 			bg={useColorModeValue('#8d9b6a', '#2F6D80')}
 		>
 			<Container

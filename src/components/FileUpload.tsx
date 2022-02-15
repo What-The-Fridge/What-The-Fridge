@@ -94,7 +94,6 @@ interface ThumbProps {
 
 class Thumb extends React.Component<ThumbProps> {
 	state = {
-		loading: false,
 		thumb: undefined,
 	};
 
@@ -103,11 +102,11 @@ class Thumb extends React.Component<ThumbProps> {
 			return;
 		}
 
-		this.setState({ loading: true }, () => {
+		this.setState(() => {
 			let reader = new FileReader();
 
 			reader.onloadend = () => {
-				this.setState({ loading: false, thumb: reader.result });
+				this.setState({ thumb: reader.result });
 			};
 
 			reader.readAsDataURL(nextProps.file);
@@ -117,14 +116,10 @@ class Thumb extends React.Component<ThumbProps> {
 	render() {
 		const { file }: any = this.props;
 		const { thumbnail }: any = this.props;
-		const { loading, thumb } = this.state;
+		const { thumb } = this.state;
 
 		if (!file && !thumbnail) {
 			return null;
-		}
-
-		if (loading) {
-			return <p>loading...</p>;
 		}
 
 		return (
