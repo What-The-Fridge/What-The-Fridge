@@ -70,8 +70,8 @@ const NavigationMenu: React.FC<NavigationMenuProps> = (props): JSX.Element => {
 				</MenuItem>
 				<MenuItem>
 					<NavLink
-						href={'/groceryList'}
-						toggleOn={props.path === '/groceryList'}
+						href={'/groceryLists'}
+						toggleOn={props.path === '/groceryLists'}
 					>
 						Grocery list
 					</NavLink>
@@ -145,8 +145,8 @@ export const Navbar: React.FC<NavbarProps> = (props): JSX.Element => {
 						My fridges
 					</NavLink>
 					<NavLink
-						href={'/groceryList'}
-						toggleOn={props.path === '/groceryList'}
+						href={'/groceryLists'}
+						toggleOn={props.path === '/groceryLists'}
 					>
 						Grocery list
 					</NavLink>

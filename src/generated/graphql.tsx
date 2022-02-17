@@ -130,6 +130,12 @@ export type GroceryListResponse = {
   groceryList?: Maybe<GroceryList>;
 };
 
+export type GroceryListsResponse = {
+  __typename?: 'GroceryListsResponse';
+  errors?: Maybe<Array<FieldError>>;
+  groceryLists?: Maybe<Array<GroceryList>>;
+};
+
 export type MeasurementType = {
   __typename?: 'MeasurementType';
   id: Scalars['Float'];
@@ -154,6 +160,7 @@ export type Mutation = {
   deleteFU: BooleanResponse;
   deleteFridge: BooleanResponse;
   deleteFridgeItem: BooleanResponse;
+  deleteGroceryList: BooleanResponse;
   deleteUser: BooleanResponse;
   transferFridgeOwner: BooleanResponse;
   updateFridgeItem: BooleanResponse;
@@ -209,6 +216,11 @@ export type MutationDeleteFridgeItemArgs = {
 };
 
 
+export type MutationDeleteGroceryListArgs = {
+  groceryListId: Scalars['Float'];
+};
+
+
 export type MutationDeleteUserArgs = {
   userId: Scalars['Float'];
 };
@@ -233,6 +245,7 @@ export type Query = {
   getFridgeUsers: UsersResponse;
   getItemInfoNutritionix: FridgeItemInfoNutritionix;
   getUserFridges: FridgesResponse;
+  getUserGroceryLists: GroceryListsResponse;
   getUserInfo: UserResponse;
 };
 
@@ -258,6 +271,11 @@ export type QueryGetItemInfoNutritionixArgs = {
 
 
 export type QueryGetUserFridgesArgs = {
+  userId: Scalars['Float'];
+};
+
+
+export type QueryGetUserGroceryListsArgs = {
   userId: Scalars['Float'];
 };
 
@@ -342,6 +360,13 @@ export type DeleteFridgeItemMutationVariables = Exact<{
 
 export type DeleteFridgeItemMutation = { __typename?: 'Mutation', deleteFridgeItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
 
+export type DeleteGroceryListMutationVariables = Exact<{
+  groceryListId: Scalars['Float'];
+}>;
+
+
+export type DeleteGroceryListMutation = { __typename?: 'Mutation', deleteGroceryList: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
+
 export type UpdateFridgeItemMutationVariables = Exact<{
   fridgeItemId: Scalars['Float'];
   input: FridgeItemInput;
@@ -375,6 +400,13 @@ export type GetUserFridgesQueryVariables = Exact<{
 
 
 export type GetUserFridgesQuery = { __typename?: 'Query', getUserFridges: { __typename?: 'FridgesResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, fridges?: Array<{ __typename?: 'Fridge', id: number, name: string, ownerId: number, createdAt: string }> | null | undefined } };
+
+export type GetUserGroceryListsQueryVariables = Exact<{
+  userId: Scalars['Float'];
+}>;
+
+
+export type GetUserGroceryListsQuery = { __typename?: 'Query', getUserGroceryLists: { __typename?: 'GroceryListsResponse', errors?: Array<{ __typename?: 'FieldError', message: string, field: string }> | null | undefined, groceryLists?: Array<{ __typename?: 'GroceryList', createdAt: string, ownerId: number, name: string, id: number }> | null | undefined } };
 
 export type GetUserInfoQueryVariables = Exact<{
   firebaseUserUid: Scalars['String'];
@@ -508,6 +540,21 @@ export const DeleteFridgeItemDocument = gql`
 export function useDeleteFridgeItemMutation() {
   return Urql.useMutation<DeleteFridgeItemMutation, DeleteFridgeItemMutationVariables>(DeleteFridgeItemDocument);
 };
+export const DeleteGroceryListDocument = gql`
+    mutation DeleteGroceryList($groceryListId: Float!) {
+  deleteGroceryList(groceryListId: $groceryListId) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}
+    `;
+
+export function useDeleteGroceryListMutation() {
+  return Urql.useMutation<DeleteGroceryListMutation, DeleteGroceryListMutationVariables>(DeleteGroceryListDocument);
+};
 export const UpdateFridgeItemDocument = gql`
     mutation UpdateFridgeItem($fridgeItemId: Float!, $input: FridgeItemInput!) {
   updateFridgeItem(fridgeItemId: $fridgeItemId, input: $input) {
@@ -621,6 +668,26 @@ export const GetUserFridgesDocument = gql`
 
 export function useGetUserFridgesQuery(options: Omit<Urql.UseQueryArgs<GetUserFridgesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GetUserFridgesQuery>({ query: GetUserFridgesDocument, ...options });
+};
+export const GetUserGroceryListsDocument = gql`
+    query GetUserGroceryLists($userId: Float!) {
+  getUserGroceryLists(userId: $userId) {
+    errors {
+      message
+      field
+    }
+    groceryLists {
+      createdAt
+      ownerId
+      name
+      id
+    }
+  }
+}
+    `;
+
+export function useGetUserGroceryListsQuery(options: Omit<Urql.UseQueryArgs<GetUserGroceryListsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetUserGroceryListsQuery>({ query: GetUserGroceryListsDocument, ...options });
 };
 export const GetUserInfoDocument = gql`
     query GetUserInfo($firebaseUserUid: String!) {

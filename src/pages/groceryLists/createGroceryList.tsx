@@ -19,7 +19,7 @@ export const CreateGroceryList: React.FC<CreateGroceryListProps> = ({}) => {
 	const router = useRouter();
 
 	return (
-		<Layout path={'/fridges/createGroceryList'}>
+		<Layout path={'/groceryLists/createGroceryList'}>
 			<Wrapper>
 				<Formik
 					initialValues={{ groceryList: '' }}
@@ -35,7 +35,7 @@ export const CreateGroceryList: React.FC<CreateGroceryListProps> = ({}) => {
 								} else if (response.data?.createGroceryList.groceryList) {
 									// upon successful creating a grocery list
 									alert('successful!');
-									router.push('/groceryList');
+									router.push('/groceryLists');
 								}
 							})
 							.catch(error => {

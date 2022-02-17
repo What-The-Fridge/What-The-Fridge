@@ -1,0 +1,14 @@
+query GetUserGroceryLists($userId: Float!) {
+  getUserGroceryLists(userId: $userId) {
+    errors {
+      message
+      field
+    }
+    groceryLists {
+      createdAt
+      ownerId
+      name
+      id
+    }
+  }
+}
