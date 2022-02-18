@@ -1,0 +1,20 @@
+query GetGroceryListGroceryItems($groceryListId: Float!) {
+  getGroceryListGroceryItems(groceryListId: $groceryListId) {
+    errors {
+      field
+      message
+    }
+    groceryItems {
+      id
+      groceryListId
+      name
+      imgUrl
+      quantity
+      upc
+      userId
+      measurementTypeId
+      createdAt
+      measurementUnit
+    }
+  }
+}

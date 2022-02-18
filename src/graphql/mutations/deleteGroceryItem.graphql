@@ -1,0 +1,9 @@
+mutation DeleteGroceryItem($groceryItemId: Float!) {
+  deleteGroceryItem(groceryItemId: $groceryItemId) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}

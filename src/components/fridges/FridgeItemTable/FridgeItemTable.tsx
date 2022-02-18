@@ -13,12 +13,9 @@ import {
 	HStack,
 	Image,
 	Input,
-	Link,
 	Select,
 	useColorMode,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import { EditIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useSticky } from 'react-table-sticky';
 import { useDeleteFridgeItemMutation } from '../../../generated/graphql';
@@ -57,7 +54,11 @@ interface TableProps {
 	setSelectedRows: Function;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
+export const Table: React.FC<TableProps> = ({
+	columns,
+	data,
+	setSelectedRows,
+}) => {
 	// Use the state and functions returned from useTable to build your UI
 	const {
 		getTableProps,
@@ -126,20 +127,22 @@ const Table: React.FC<TableProps> = ({ columns, data, setSelectedRows }) => {
 								>
 									<Center>
 										{column.render('Header')}
-										{/* Add a sort direction indicator */}
-										<span>
-											{column.isSorted ? (
-												column.isSortedDesc ? (
-													<FaSortDown />
+										{column.id !== 'img' ? (
+											<span>
+												{column.isSorted ? (
+													column.isSortedDesc ? (
+														<FaSortDown />
+													) : (
+														<FaSortUp />
+													)
+												) : column.id !== 'selection' ? (
+													<FaSort />
 												) : (
-													<FaSortUp />
-												)
-											) : column.id !== 'selection' ? (
-												<FaSort />
-											) : (
-												''
-											)}
-										</span>
+													''
+												)}
+											</span>
+										) : null}
+										{/* Add a sort direction indicator */}
 									</Center>
 								</div>
 							))}

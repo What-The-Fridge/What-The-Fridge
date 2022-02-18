@@ -3,10 +3,14 @@ import { Button, Select } from '@chakra-ui/react';
 import { withUrqlClient } from 'next-urql';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import GroceryItemTable, {
+	TableData,
+} from '../../components/groceryLists/GroceryItemTable/GroceryItemTable';
 import { Layout } from '../../components/Layout';
 import {
 	useDeleteGroceryListMutation,
 	useGetUserGroceryListsQuery,
+	useGetGroceryListGroceryItemsQuery,
 } from '../../generated/graphql';
 import { useAppContext } from '../../utils/context';
 import { createUrqlClient } from '../../utils/createUrqlClient';
@@ -33,6 +37,22 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 		: [{ id: -1 }];
 
 	let groceryListId = allGroceryLists[selectedGroceryList]?.id;
+
+	// grocerList's groceryItems
+	let [
+		{
+			data: groceryItems,
+			fetching: fetchingGroceryItems,
+			error: groceryItemsError,
+		},
+		executeQuery,
+	] = useGetGroceryListGroceryItemsQuery({
+		variables: {
+			groceryListId: groceryListId,
+		},
+	});
+
+	console.log(groceryItems);
 
 	const renderUserGroceryLists = () => {
 		if (!userGroceryLists && fetchingGroceryLists)
@@ -118,9 +138,69 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 		);
 	};
 
+	const formatTableData = () => {
+		if (!groceryItems && fetchingGroceryItems)
+			return <Text>Loading grocery items...</Text>;
+		if (!groceryItems && !fetchingGroceryItems && groceryItemsError)
+			return <Text>Errors getting fridge items</Text>;
+
+		// TODO: There are other errors even if its a successful fetch
+		if (groceryItems?.getGroceryListGroceryItems.groceryItems?.length === 0)
+			return (
+				<Box display={'flex'} flexDirection="column" alignItems="center">
+					<Text>This grocery list is empty👀</Text>
+					<Button
+						mt={8 / 4}
+						variant="outline"
+						colorScheme="teal"
+						border="2px"
+						onClick={() => {
+							router.push(
+								`/groceryLists/createGroceryItem?groceryListId=${groceryListId}`
+							);
+						}}
+					>
+						Add First Grocery Item
+					</Button>
+				</Box>
+			);
+
+		let fetchedTableData: TableData[] = [];
+		groceryItems?.getGroceryListGroceryItems.groceryItems?.map(element => {
+			fetchedTableData.push({
+				img: element.imgUrl,
+				name: element.name,
+				quantity: element.quantity,
+				unit: element.measurementUnit,
+				id: element.id,
+			});
+		});
+
+		return (
+			<GroceryItemTable
+				data={() => fetchedTableData}
+				rerenderTime={selectedGroceryList}
+				groceryListId={groceryListId}
+			/>
+		);
+	};
+
 	return (
 		<Layout path={'/groceryLists'}>
 			<Center>{renderUserGroceryLists()}</Center>
+			<Box
+				mt={8}
+				key={rerenderTable}
+				display={'flex'}
+				flexDirection="column"
+				alignItems="center"
+			>
+				{userGroceryLists?.getUserGroceryLists.groceryLists?.length !==
+					undefined &&
+				userGroceryLists?.getUserGroceryLists.groceryLists?.length > 0
+					? formatTableData()
+					: null}
+			</Box>
 		</Layout>
 	);
 };
