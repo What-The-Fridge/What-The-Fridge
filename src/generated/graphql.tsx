@@ -219,6 +219,7 @@ export type Mutation = {
   deleteGroceryItem: BooleanResponse;
   deleteGroceryList: BooleanResponse;
   deleteUser: BooleanResponse;
+  moveGroceryItemToFridge: BooleanResponse;
   transferFridgeOwner: BooleanResponse;
   updateFridgeItem: BooleanResponse;
   updateGroceryItem: BooleanResponse;
@@ -291,6 +292,12 @@ export type MutationDeleteGroceryListArgs = {
 
 export type MutationDeleteUserArgs = {
   userId: Scalars['Float'];
+};
+
+
+export type MutationMoveGroceryItemToFridgeArgs = {
+  groceryItemId: Scalars['Float'];
+  input: FridgeItemInput;
 };
 
 
@@ -466,6 +473,14 @@ export type DeleteGroceryListMutationVariables = Exact<{
 
 
 export type DeleteGroceryListMutation = { __typename?: 'Mutation', deleteGroceryList: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
+
+export type MoveGroceryItemToFridgeMutationVariables = Exact<{
+  groceryItemId: Scalars['Float'];
+  input: FridgeItemInput;
+}>;
+
+
+export type MoveGroceryItemToFridgeMutation = { __typename?: 'Mutation', moveGroceryItemToFridge: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
 
 export type UpdateFridgeItemMutationVariables = Exact<{
   fridgeItemId: Scalars['Float'];
@@ -716,6 +731,21 @@ export const DeleteGroceryListDocument = gql`
 
 export function useDeleteGroceryListMutation() {
   return Urql.useMutation<DeleteGroceryListMutation, DeleteGroceryListMutationVariables>(DeleteGroceryListDocument);
+};
+export const MoveGroceryItemToFridgeDocument = gql`
+    mutation MoveGroceryItemToFridge($groceryItemId: Float!, $input: FridgeItemInput!) {
+  moveGroceryItemToFridge(groceryItemId: $groceryItemId, input: $input) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}
+    `;
+
+export function useMoveGroceryItemToFridgeMutation() {
+  return Urql.useMutation<MoveGroceryItemToFridgeMutation, MoveGroceryItemToFridgeMutationVariables>(MoveGroceryItemToFridgeDocument);
 };
 export const UpdateFridgeItemDocument = gql`
     mutation UpdateFridgeItem($fridgeItemId: Float!, $input: FridgeItemInput!) {

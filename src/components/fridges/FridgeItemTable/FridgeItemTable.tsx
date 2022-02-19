@@ -14,6 +14,7 @@ import {
 	Image,
 	Input,
 	Select,
+	Text,
 	useColorMode,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
@@ -117,6 +118,7 @@ export const Table: React.FC<TableProps> = ({
 			<div {...getTableProps()} className="table sticky">
 				{/* set selected rows */}
 				{setSelectedRows(selectedFlatRows)}
+				{console.log(selectedFlatRows)}
 				<div className="header">
 					{headerGroups.map(headerGroup => (
 						<div {...headerGroup.getHeaderGroupProps()} className="tr">
@@ -247,7 +249,11 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const isDark = colorMode === 'dark';
 
 	const centeredText = (text: string) => {
-		return <Center style={{ height: '100%' }}>{text}</Center>;
+		return (
+			<Center style={{ height: '100%' }}>
+				<Text align="center">{text}</Text>
+			</Center>
+		);
 	};
 
 	const columns = useMemo(
@@ -377,13 +383,22 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					variant="outline"
 					colorScheme="red"
 					border="2px"
-					onClick={() => {
-						selectedRows.forEach(element =>
-							deleteFridgeItem({ itemId: element.original.id })
+					onClick={async () => {
+						let success = true;
+						for (let i = 0; i < selectedRows.length; i++) {
+							let element = selectedRows[i];
+							await deleteFridgeItem({ itemId: element.original.id })
 								.then(response => {
 									if (response.data?.deleteFridgeItem.errors) {
-										alert('error!');
-									} else if (response.data?.deleteFridgeItem.success) {
+										success = false;
+										alert(
+											'errors encountered while deleting selected item(s)!'
+										);
+									} else if (
+										response.data?.deleteFridgeItem.success &&
+										success &&
+										i == selectedRows.length - 1
+									) {
 										// upon successful creating a fridge
 										alert('successful!');
 										// reload to show the user the latest changes
@@ -391,9 +406,10 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 									}
 								})
 								.catch(error => {
+									success = false;
 									alert('error!' + error.toString());
-								})
-						);
+								});
+						}
 					}}
 				>
 					Delete Selected

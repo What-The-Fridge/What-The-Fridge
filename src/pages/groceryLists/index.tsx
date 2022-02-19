@@ -175,6 +175,10 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 				quantity: element.quantity,
 				unit: element.measurementUnit,
 				id: element.id,
+				upc: element.upc,
+				userId: element.userId,
+				measurementTypeId: element.measurementTypeId,
+				imgUrl: element.imgUrl,
 			});
 		});
 

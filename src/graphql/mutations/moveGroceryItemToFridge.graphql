@@ -1,0 +1,9 @@
+mutation MoveGroceryItemToFridge($groceryItemId: Float!, $input: FridgeItemInput!) {
+  moveGroceryItemToFridge(groceryItemId: $groceryItemId, input: $input) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}

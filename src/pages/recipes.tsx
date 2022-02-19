@@ -1,4 +1,5 @@
-import { Box, Text } from '@chakra-ui/layout';
+import { Text } from '@chakra-ui/layout';
+import { Center } from '@chakra-ui/react';
 import { withUrqlClient } from 'next-urql';
 import React from 'react';
 import { Layout } from '../components/Layout';
@@ -9,9 +10,9 @@ interface RecipeProps {}
 export const Recipes: React.FC<RecipeProps> = ({}) => {
 	return (
 		<Layout path={'/recipes'}>
-			<Box>
-				<Text>Recipes</Text>
-			</Box>
+			<Center>
+				<Text>In development . . .</Text>
+			</Center>
 		</Layout>
 	);
 };
