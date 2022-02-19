@@ -1,10 +1,10 @@
 import { withUrqlClient } from 'next-urql';
 import React, { useEffect, useState } from 'react';
 import {
-	useCreateFridgeItemMutation,
+	useCreateGroceryItemMutation,
 	useGetAllMeasurementTypesQuery,
-	useGetFridgeItemByIdQuery,
-	useUpdateFridgeItemMutation,
+	useGetGroceryItemByIdQuery,
+	useUpdateGroceryItemMutation,
 } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 import { useAppContext } from '../../utils/context';
@@ -30,22 +30,19 @@ import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
 import { toErrorMap } from '../../components/ToErrorMap';
-import { CustomDatePicker } from '../../components/CustomDatePicker';
 
-interface CreateFridgeItemProps {}
+interface CreateGroceryItemProps {}
 interface FormInitialValues {
 	name: string;
 	quantity: string;
 	unit: string;
 	upc: string;
 	file: string;
-	purchasedDate: string;
-	expiryDate: string;
 }
 
-export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
-	const [, createFridgeItem] = useCreateFridgeItemMutation();
-	const [, updateFridgeItem] = useUpdateFridgeItemMutation();
+export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
+	const [, createGroceryItem] = useCreateGroceryItemMutation();
+	const [, updateGroceryItem] = useUpdateGroceryItemMutation();
 	const [rerenderForm, setRerenderForm] = useState(0);
 
 	const [formInitialValues, setFormInitialValues] = useState<FormInitialValues>(
@@ -55,14 +52,12 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			unit: '1',
 			upc: '',
 			file: '',
-			purchasedDate: '',
-			expiryDate: '',
 		}
 	);
 
 	const value = useAppContext();
 	const router = useRouter();
-	const isCreation = router.query.fridgeItem === 'createFridgeItem';
+	const isCreation = router.query.groceryItem === 'createGroceryItem';
 
 	let [
 		{
@@ -77,44 +72,38 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	// TODO: shouldn't execute this if router.query.itemId is undefined
 	let [
 		{
-			data: fridgeItemById,
-			fetching: fetchingFridgeItemById,
-			error: fridgeItemByIdError,
+			data: groceryItemById,
+			fetching: fetchingGroceryItemById,
+			error: groceryItemByIdError,
 		},
-	] = useGetFridgeItemByIdQuery({
+	] = useGetGroceryItemByIdQuery({
 		variables: {
-			getFridgeItemByIdId: router.query.itemId
+			getGroceryItemByIdId: router.query.itemId
 				? parseInt(router.query.itemId as string)
 				: 0,
 		},
 	});
 
 	useEffect(() => {
-		let detailedFridgeItem =
-			fridgeItemById?.getFridgeItemById.detailedFridgeItem;
-		if (fridgeItemById?.getFridgeItemById.errors === null) {
+		let detailedGroceryItem =
+			groceryItemById?.getGroceryItemById.detailedGroceryItem;
+		if (groceryItemById?.getGroceryItemById.errors === null) {
 			setFormInitialValues({
-				name: detailedFridgeItem?.name ? detailedFridgeItem?.name : '',
+				name: detailedGroceryItem?.name ? detailedGroceryItem?.name : '',
 				quantity:
-					detailedFridgeItem?.quantity !== undefined
-						? detailedFridgeItem?.quantity.toString()
+					detailedGroceryItem?.quantity !== undefined
+						? detailedGroceryItem?.quantity.toString()
 						: '1',
 				unit:
-					detailedFridgeItem?.measurementTypeId !== undefined
-						? detailedFridgeItem?.measurementTypeId.toString()
+					detailedGroceryItem?.measurementTypeId !== undefined
+						? detailedGroceryItem?.measurementTypeId.toString()
 						: '1',
-				upc: detailedFridgeItem?.upc ? detailedFridgeItem?.upc : '',
-				file: detailedFridgeItem?.imgUrl ? detailedFridgeItem?.imgUrl : '',
-				purchasedDate: detailedFridgeItem?.purchasedDate
-					? detailedFridgeItem?.purchasedDate
-					: '',
-				expiryDate: detailedFridgeItem?.expiryDate
-					? detailedFridgeItem?.expiryDate
-					: '',
+				upc: detailedGroceryItem?.upc ? detailedGroceryItem?.upc : '',
+				file: detailedGroceryItem?.imgUrl ? detailedGroceryItem?.imgUrl : '',
 			});
 			setRerenderForm(rerenderForm + 1);
 		}
-	}, [fridgeItemById, measurementTypes]);
+	}, [groceryItemById, measurementTypes]);
 
 	const renderUnits = () => {
 		if (!measurementTypes && fetchingMeasurements)
@@ -156,7 +145,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		const currTime = Date.now();
 		const storageRef = ref(
 			storage,
-			`fridgeItems/${userEmail}/${file.name}${currTime}`
+			`groceryItems/${userEmail}/${file.name}${currTime}`
 		);
 		const snapshot = await uploadBytes(storageRef, file);
 		const downloadURL = await getDownloadURL(snapshot.ref);
@@ -171,47 +160,43 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			unit: string;
 			upc: string;
 			file: string;
-			purchasedDate: string;
-			expiryDate: string;
 		},
 		imgUrl: string | null,
 		setErrors: any
 	): Promise<void> => {
-		const fridgeItemInput = {
-			fridgeId: parseInt(router.query.fridgeId as string),
+		const groceryItemInput = {
+			groceryListId: parseInt(router.query.groceryListId as string),
 			measurementTypeId: parseInt(values.unit),
 			name: values.name,
 			quantity: parseInt(values.quantity),
 			userId: value[0].id,
 			imgUrl: imgUrl,
 			upc: values.upc == '' ? null : values.upc,
-			purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
-			expiryDate: values.expiryDate == '' ? null : values.expiryDate,
 		};
 
 		if (isCreation) {
-			await createFridgeItem({
-				input: fridgeItemInput,
+			await createGroceryItem({
+				input: groceryItemInput,
 			}).then(response => {
-				if (response.data?.createFridgeItem.errors) {
+				if (response.data?.createGroceryItem.errors) {
 					alert('error!');
-					setErrors(toErrorMap(response.data.createFridgeItem.errors));
-				} else if (response.data?.createFridgeItem.detailedFridgeItem) {
+					setErrors(toErrorMap(response.data.createGroceryItem.errors));
+				} else if (response.data?.createGroceryItem.groceryItem) {
 					// upon successful creating an account
 					alert('successful!');
 				}
 			});
 		} else {
-			await updateFridgeItem({
-				input: fridgeItemInput,
+			await updateGroceryItem({
+				input: groceryItemInput,
 				// TODO: HANDLE CASES WHERE itemId is not passed
-				fridgeItemId: parseInt(router.query.itemId as string),
+				groceryItemId: parseInt(router.query.itemId as string),
 			}).then(response => {
 				console.log(response);
-				if (response.data?.updateFridgeItem.errors) {
+				if (response.data?.updateGroceryItem.errors) {
 					alert('error!');
-					setErrors(toErrorMap(response.data.updateFridgeItem.errors));
-				} else if (response.data?.updateFridgeItem.success) {
+					setErrors(toErrorMap(response.data.updateGroceryItem.errors));
+				} else if (response.data?.updateGroceryItem.success) {
 					// upon successful creating an account
 					alert('successful!');
 				}
@@ -220,9 +205,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	};
 
 	// TODO: make this a loading component and reuse on other pages
-	if (fetchingMeasurements && fetchingFridgeItemById) {
+	if (fetchingMeasurements && fetchingGroceryItemById) {
 		return (
-			<Layout path={`/fridges/createFridgeItem`}>
+			<Layout path={`/groceryLists/createGroceryItem`}>
 				<Center>
 					<Button
 						isLoading
@@ -237,7 +222,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	}
 
 	return (
-		<Layout path={`/fridges/createFridgeItem`}>
+		<Layout path={`/groceryLists/createGroceryItem`}>
 			<Formik
 				key={rerenderForm}
 				initialValues={formInitialValues}
@@ -260,7 +245,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 								width="full"
 							>
 								<Heading size="lg" as="h1" paddingBottom="4">
-									{isCreation ? 'Create new fridge item' : 'Edit fridge item'}
+									{isCreation ? 'Create new grocery item' : 'Edit grocery item'}
 								</Heading>
 							</Box>
 							<FieldGroup title="Required Info">
@@ -293,38 +278,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 										placeholder="E.g. 056920124845"
 										label="Barcode"
 										maxLength={13}
-									/>
-
-									<CustomDatePicker
-										label="Purchased date"
-										setFieldValue={props.setFieldValue}
-										name="purchasedDate"
-										value="purchasedDate"
-										infoPopOver={{
-											header: 'Warning',
-											body: 'Default purchased date is set today',
-										}}
-										selectedDate={
-											formInitialValues.purchasedDate !== ''
-												? new Date(parseInt(formInitialValues.purchasedDate))
-												: undefined
-										}
-									/>
-
-									<CustomDatePicker
-										label="Expiry date"
-										setFieldValue={props.setFieldValue}
-										name="expiryDate"
-										value="expiryDate"
-										infoPopOver={{
-											header: 'Warning',
-											body: 'Default expiry date is set to 7 days from now',
-										}}
-										selectedDate={
-											formInitialValues.expiryDate !== ''
-												? new Date(parseInt(formInitialValues.expiryDate))
-												: undefined
-										}
 									/>
 
 									<Box>
@@ -362,7 +315,7 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 									colorScheme="red"
 									border="2px"
 									onClick={() => {
-										router.push('/fridges');
+										router.push('/groceryLists');
 									}}
 								>
 									Cancel
@@ -376,4 +329,4 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	);
 };
 
-export default withUrqlClient(createUrqlClient)(CreateFridgeItem);
+export default withUrqlClient(createUrqlClient)(CreateGroceryItem);

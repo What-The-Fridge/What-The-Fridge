@@ -1,0 +1,19 @@
+mutation CreateGroceryItem($input: GroceryItemInput!) {
+  createGroceryItem(input: $input) {
+    errors {
+      field
+      message
+    }
+    groceryItem {
+      id
+      groceryListId
+      quantity
+      name
+      imgUrl
+      upc
+      userId
+      measurementTypeId
+      createdAt
+    }
+  }
+}

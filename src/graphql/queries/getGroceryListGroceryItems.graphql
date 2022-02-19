@@ -7,13 +7,13 @@ query GetGroceryListGroceryItems($groceryListId: Float!) {
     groceryItems {
       id
       groceryListId
-      name
-      imgUrl
       quantity
-      upc
       userId
-      measurementTypeId
+      name
+      upc
+      imgUrl
       createdAt
+      measurementTypeId
       measurementUnit
     }
   }

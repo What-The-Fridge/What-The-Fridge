@@ -40,6 +40,32 @@ export type DetailedFridgeItem = {
   userId: Scalars['Float'];
 };
 
+export type DetailedGroceryItem = {
+  __typename?: 'DetailedGroceryItem';
+  createdAt: Scalars['String'];
+  groceryListId: Scalars['Float'];
+  id: Scalars['Float'];
+  imgUrl?: Maybe<Scalars['String']>;
+  measurementTypeId: Scalars['Float'];
+  measurementUnit: Scalars['String'];
+  name: Scalars['String'];
+  quantity: Scalars['Float'];
+  upc?: Maybe<Scalars['String']>;
+  userId: Scalars['Float'];
+};
+
+export type DetailedGroceryItemResponse = {
+  __typename?: 'DetailedGroceryItemResponse';
+  detailedGroceryItem?: Maybe<DetailedGroceryItem>;
+  errors?: Maybe<Array<FieldError>>;
+};
+
+export type DetailedGroceryItemsResponse = {
+  __typename?: 'DetailedGroceryItemsResponse';
+  errors?: Maybe<Array<FieldError>>;
+  groceryItems?: Maybe<Array<DetailedGroceryItem>>;
+};
+
 export type FuResponse = {
   __typename?: 'FUResponse';
   errors?: Maybe<Array<FieldError>>;
@@ -145,12 +171,6 @@ export type GroceryItemResponse = {
   groceryItem?: Maybe<GroceryItem>;
 };
 
-export type GroceryItemsResponse = {
-  __typename?: 'GroceryItemsResponse';
-  errors?: Maybe<Array<FieldError>>;
-  groceryItems?: Maybe<Array<DetailedGroceryItem>>;
-};
-
 export type GroceryList = {
   __typename?: 'GroceryList';
   createdAt: Scalars['String'];
@@ -201,6 +221,7 @@ export type Mutation = {
   deleteUser: BooleanResponse;
   transferFridgeOwner: BooleanResponse;
   updateFridgeItem: BooleanResponse;
+  updateGroceryItem: BooleanResponse;
 };
 
 
@@ -284,13 +305,20 @@ export type MutationUpdateFridgeItemArgs = {
   input: FridgeItemInput;
 };
 
+
+export type MutationUpdateGroceryItemArgs = {
+  groceryItemId: Scalars['Float'];
+  input: GroceryItemInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllMeasurementTypes: MeasurementTypesResponse;
   getFridgeFridgeItems: FridgeItemsResponse;
   getFridgeItemById: FridgeItemResponse;
   getFridgeUsers: UsersResponse;
-  getGroceryListGroceryItems: GroceryItemsResponse;
+  getGroceryItemById: DetailedGroceryItemResponse;
+  getGroceryListGroceryItems: DetailedGroceryItemsResponse;
   getItemInfoNutritionix: FridgeItemInfoNutritionix;
   getUserFridges: FridgesResponse;
   getUserGroceryLists: GroceryListsResponse;
@@ -310,6 +338,11 @@ export type QueryGetFridgeItemByIdArgs = {
 
 export type QueryGetFridgeUsersArgs = {
   fridgeId: Scalars['Float'];
+};
+
+
+export type QueryGetGroceryItemByIdArgs = {
+  id: Scalars['Float'];
 };
 
 
@@ -369,20 +402,6 @@ export type UsersResponse = {
   users?: Maybe<Array<User>>;
 };
 
-export type DetailedGroceryItem = {
-  __typename?: 'detailedGroceryItem';
-  createdAt: Scalars['String'];
-  groceryListId: Scalars['Float'];
-  id: Scalars['Float'];
-  imgUrl?: Maybe<Scalars['String']>;
-  measurementTypeId: Scalars['Float'];
-  measurementUnit: Scalars['String'];
-  name: Scalars['String'];
-  quantity: Scalars['Float'];
-  upc?: Maybe<Scalars['String']>;
-  userId: Scalars['Float'];
-};
-
 export type CreateUserMutationVariables = Exact<{
   input: UserInput;
 }>;
@@ -404,6 +423,13 @@ export type CreateFridgeItemMutationVariables = Exact<{
 
 
 export type CreateFridgeItemMutation = { __typename?: 'Mutation', createFridgeItem: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, name: string, createdAt: string, upc?: string | null | undefined, userId: number, imgUrl?: string | null | undefined, measurementTypeId: number, measurement: string, measurementUnit: string } | null | undefined } };
+
+export type CreateGroceryItemMutationVariables = Exact<{
+  input: GroceryItemInput;
+}>;
+
+
+export type CreateGroceryItemMutation = { __typename?: 'Mutation', createGroceryItem: { __typename?: 'GroceryItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, groceryItem?: { __typename?: 'GroceryItem', id: number, groceryListId: number, quantity: number, name: string, imgUrl?: string | null | undefined, upc?: string | null | undefined, userId: number, measurementTypeId: number, createdAt: string } | null | undefined } };
 
 export type CreateGroceryListMutationVariables = Exact<{
   ownerId: Scalars['Float'];
@@ -449,6 +475,14 @@ export type UpdateFridgeItemMutationVariables = Exact<{
 
 export type UpdateFridgeItemMutation = { __typename?: 'Mutation', updateFridgeItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
 
+export type UpdateGroceryItemMutationVariables = Exact<{
+  groceryItemId: Scalars['Float'];
+  input: GroceryItemInput;
+}>;
+
+
+export type UpdateGroceryItemMutation = { __typename?: 'Mutation', updateGroceryItem: { __typename?: 'BooleanResponse', success: boolean, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined } };
+
 export type GetAllMeasurementTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -468,12 +502,19 @@ export type GetFridgeItemByIdQueryVariables = Exact<{
 
 export type GetFridgeItemByIdQuery = { __typename?: 'Query', getFridgeItemById: { __typename?: 'FridgeItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedFridgeItem?: { __typename?: 'DetailedFridgeItem', id: number, fridgeItemInfoId: number, fridgeId: number, quantity: number, purchasedDate?: string | null | undefined, expiryDate?: string | null | undefined, createdAt: string, name: string, upc?: string | null | undefined, imgUrl?: string | null | undefined, userId: number, measurementTypeId: number, measurementUnit: string, measurement: string } | null | undefined } };
 
+export type GetGroceryItemByIdQueryVariables = Exact<{
+  getGroceryItemByIdId: Scalars['Float'];
+}>;
+
+
+export type GetGroceryItemByIdQuery = { __typename?: 'Query', getGroceryItemById: { __typename?: 'DetailedGroceryItemResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, detailedGroceryItem?: { __typename?: 'DetailedGroceryItem', id: number, groceryListId: number, quantity: number, upc?: string | null | undefined, name: string, imgUrl?: string | null | undefined, measurementTypeId: number, createdAt: string, userId: number, measurementUnit: string } | null | undefined } };
+
 export type GetGroceryListGroceryItemsQueryVariables = Exact<{
   groceryListId: Scalars['Float'];
 }>;
 
 
-export type GetGroceryListGroceryItemsQuery = { __typename?: 'Query', getGroceryListGroceryItems: { __typename?: 'GroceryItemsResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, groceryItems?: Array<{ __typename?: 'detailedGroceryItem', id: number, groceryListId: number, name: string, imgUrl?: string | null | undefined, quantity: number, upc?: string | null | undefined, userId: number, measurementTypeId: number, createdAt: string, measurementUnit: string }> | null | undefined } };
+export type GetGroceryListGroceryItemsQuery = { __typename?: 'Query', getGroceryListGroceryItems: { __typename?: 'DetailedGroceryItemsResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null | undefined, groceryItems?: Array<{ __typename?: 'DetailedGroceryItem', id: number, groceryListId: number, quantity: number, userId: number, name: string, upc?: string | null | undefined, imgUrl?: string | null | undefined, createdAt: string, measurementTypeId: number, measurementUnit: string }> | null | undefined } };
 
 export type GetUserFridgesQueryVariables = Exact<{
   userId: Scalars['Float'];
@@ -571,6 +612,31 @@ export const CreateFridgeItemDocument = gql`
 export function useCreateFridgeItemMutation() {
   return Urql.useMutation<CreateFridgeItemMutation, CreateFridgeItemMutationVariables>(CreateFridgeItemDocument);
 };
+export const CreateGroceryItemDocument = gql`
+    mutation CreateGroceryItem($input: GroceryItemInput!) {
+  createGroceryItem(input: $input) {
+    errors {
+      field
+      message
+    }
+    groceryItem {
+      id
+      groceryListId
+      quantity
+      name
+      imgUrl
+      upc
+      userId
+      measurementTypeId
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useCreateGroceryItemMutation() {
+  return Urql.useMutation<CreateGroceryItemMutation, CreateGroceryItemMutationVariables>(CreateGroceryItemDocument);
+};
 export const CreateGroceryListDocument = gql`
     mutation CreateGroceryList($ownerId: Float!, $name: String!) {
   createGroceryList(ownerId: $ownerId, name: $name) {
@@ -666,6 +732,21 @@ export const UpdateFridgeItemDocument = gql`
 export function useUpdateFridgeItemMutation() {
   return Urql.useMutation<UpdateFridgeItemMutation, UpdateFridgeItemMutationVariables>(UpdateFridgeItemDocument);
 };
+export const UpdateGroceryItemDocument = gql`
+    mutation UpdateGroceryItem($groceryItemId: Float!, $input: GroceryItemInput!) {
+  updateGroceryItem(groceryItemId: $groceryItemId, input: $input) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}
+    `;
+
+export function useUpdateGroceryItemMutation() {
+  return Urql.useMutation<UpdateGroceryItemMutation, UpdateGroceryItemMutationVariables>(UpdateGroceryItemDocument);
+};
 export const GetAllMeasurementTypesDocument = gql`
     query GetAllMeasurementTypes {
   getAllMeasurementTypes {
@@ -745,6 +826,32 @@ export const GetFridgeItemByIdDocument = gql`
 export function useGetFridgeItemByIdQuery(options: Omit<Urql.UseQueryArgs<GetFridgeItemByIdQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GetFridgeItemByIdQuery>({ query: GetFridgeItemByIdDocument, ...options });
 };
+export const GetGroceryItemByIdDocument = gql`
+    query GetGroceryItemById($getGroceryItemByIdId: Float!) {
+  getGroceryItemById(id: $getGroceryItemByIdId) {
+    errors {
+      field
+      message
+    }
+    detailedGroceryItem {
+      id
+      groceryListId
+      quantity
+      upc
+      name
+      imgUrl
+      measurementTypeId
+      createdAt
+      userId
+      measurementUnit
+    }
+  }
+}
+    `;
+
+export function useGetGroceryItemByIdQuery(options: Omit<Urql.UseQueryArgs<GetGroceryItemByIdQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetGroceryItemByIdQuery>({ query: GetGroceryItemByIdDocument, ...options });
+};
 export const GetGroceryListGroceryItemsDocument = gql`
     query GetGroceryListGroceryItems($groceryListId: Float!) {
   getGroceryListGroceryItems(groceryListId: $groceryListId) {
@@ -755,13 +862,13 @@ export const GetGroceryListGroceryItemsDocument = gql`
     groceryItems {
       id
       groceryListId
-      name
-      imgUrl
       quantity
-      upc
       userId
-      measurementTypeId
+      name
+      upc
+      imgUrl
       createdAt
+      measurementTypeId
       measurementUnit
     }
   }

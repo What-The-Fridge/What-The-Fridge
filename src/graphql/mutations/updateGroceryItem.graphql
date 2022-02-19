@@ -1,0 +1,9 @@
+mutation UpdateGroceryItem($groceryItemId: Float!, $input: GroceryItemInput!) {
+  updateGroceryItem(groceryItemId: $groceryItemId, input: $input) {
+    errors {
+      field
+      message
+    }
+    success
+  }
+}

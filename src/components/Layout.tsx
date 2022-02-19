@@ -10,7 +10,6 @@ import { CustomBreadcrumb } from './CustomBreadcrumb';
 
 interface LayoutProps {
 	path: string;
-	fridgeId?: number;
 	children: JSX.Element[] | JSX.Element;
 }
 

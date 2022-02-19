@@ -2,7 +2,7 @@ import { Box, Text, Center } from '@chakra-ui/layout';
 import { Button, Select } from '@chakra-ui/react';
 import { withUrqlClient } from 'next-urql';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GroceryItemTable, {
 	TableData,
 } from '../../components/groceryLists/GroceryItemTable/GroceryItemTable';
@@ -52,7 +52,9 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 		},
 	});
 
-	console.log(groceryItems);
+	useEffect(() => {
+		setRerenderTable(rerenderTable + 1);
+	}, [groceryItems, userGroceryLists]);
 
 	const renderUserGroceryLists = () => {
 		if (!userGroceryLists && fetchingGroceryLists)
