@@ -76,7 +76,7 @@ export const Table: React.FC<TableProps> = ({
 		previousPage,
 		setPageSize,
 		selectedFlatRows,
-		state: { pageIndex, pageSize, selectedRowIds },
+		state: { pageIndex, pageSize },
 	} = useTable(
 		{
 			columns,
@@ -152,7 +152,7 @@ export const Table: React.FC<TableProps> = ({
 					))}
 				</div>
 				<div {...getTableBodyProps()} className="body">
-					{page.map((row, i) => {
+					{page.map(row => {
 						prepareRow(row);
 						return (
 							<div {...row.getRowProps()} className="tr">

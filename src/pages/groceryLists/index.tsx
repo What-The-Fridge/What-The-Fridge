@@ -45,7 +45,7 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 			fetching: fetchingGroceryItems,
 			error: groceryItemsError,
 		},
-		executeQuery,
+		// executeQuery,
 	] = useGetGroceryListGroceryItemsQuery({
 		variables: {
 			groceryListId: groceryListId,
@@ -211,4 +211,4 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 	);
 };
 
-export default withUrqlClient(createUrqlClient)(GroceryList);
+export default withUrqlClient(createUrqlClient, { ssr: true })(GroceryList);

@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/layout';
+import { Text } from '@chakra-ui/layout';
 import { Center } from '@chakra-ui/react';
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../utils/createUrqlClient';

@@ -15,7 +15,6 @@ import FridgeItemTable, {
 	TableData,
 } from '../../components/fridges/FridgeItemTable/FridgeItemTable';
 import { useRouter } from 'next/router';
-import { toErrorMap } from '../../components/ToErrorMap';
 
 interface CreateFridgeProps {}
 

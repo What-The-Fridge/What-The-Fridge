@@ -1,4 +1,4 @@
-import { color, extendTheme } from '@chakra-ui/react';
+import { extendTheme } from '@chakra-ui/react';
 import { createBreakpoints, mode } from '@chakra-ui/theme-tools';
 
 const fonts = { mono: `'Menlo', monospace` };

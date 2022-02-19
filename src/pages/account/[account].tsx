@@ -11,15 +11,14 @@ import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseApp } from '../../components/Firebase';
 import { useRouter } from 'next/router';
-import { useAppContext } from '../../utils/context';
 
 interface CreateAccountProps {}
 
 export const CreateAccount: React.FC<CreateAccountProps> = ({}) => {
 	const router = useRouter();
 	const [, createUser] = useCreateUserMutation();
-	const [user, loading, error] = useAuthState(getAuth(firebaseApp));
-	const value = useAppContext();
+	// , loading, error
+	const [user] = useAuthState(getAuth(firebaseApp));
 
 	return (
 		<Wrapper>

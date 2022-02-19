@@ -238,6 +238,11 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 
 	return (
 		<Layout path={`/fridges/createFridgeItem`}>
+			<Center>
+				{fridgeItemByIdError && !isCreation ? (
+					<Text>Error loading to-be-edited fridge item</Text>
+				) : null}
+			</Center>
 			<Formik
 				key={rerenderForm}
 				initialValues={formInitialValues}

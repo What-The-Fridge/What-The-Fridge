@@ -223,6 +223,11 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 
 	return (
 		<Layout path={`/groceryLists/createGroceryItem`}>
+			<Center>
+				{groceryItemByIdError && !isCreation ? (
+					<Text>Error loading to-be-edited grocery item</Text>
+				) : null}
+			</Center>
 			<Formik
 				key={rerenderForm}
 				initialValues={formInitialValues}
