@@ -1,7 +1,7 @@
 import { dedupExchange, cacheExchange, fetchExchange } from '@urql/core';
 
 export const createUrqlClient = (ssrExchange: any) => ({
-	url: process.env.NEXT_PUBLIC_API_URL,
+	url: process.env.NEXT_PUBLIC_API_URL as string,
 	fetchOptions: {
 		credentials: 'include' as const,
 		headers: {
