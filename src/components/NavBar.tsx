@@ -89,7 +89,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = (props): JSX.Element => {
 						</Button>
 					) : (
 						<Button colorScheme="teal">
-							<NextLink href={'/login'} passHref>
+							<NextLink href={'/account/login'} passHref>
 								<Link>Login</Link>
 							</NextLink>
 						</Button>
@@ -165,7 +165,7 @@ export const Navbar: React.FC<NavbarProps> = (props): JSX.Element => {
 						</Button>
 					) : (
 						<Button colorScheme="teal">
-							<NextLink href={'/login'} passHref>
+							<NextLink href={'/account/login'} passHref>
 								<Link>Login</Link>
 							</NextLink>
 						</Button>

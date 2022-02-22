@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Box } from '@chakra-ui/layout';
 import { withUrqlClient } from 'next-urql';
-import { createUrqlClient } from '../utils/createUrqlClient';
+import { createUrqlClient } from '../../utils/createUrqlClient';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebase, { firebaseApp } from '../components/Firebase';
+import firebase, { firebaseApp } from '../../components/Firebase';
 import { getAuth } from 'firebase/auth';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
-import { Wrapper } from '../components/Wrapper';
+import { Wrapper } from '../../components/Wrapper';
 import { Form, Formik } from 'formik';
-import { InputField } from '../components/InputField';
+import { InputField } from '../../components/InputField';
 import { Button } from '@chakra-ui/react';
 
 // Configure FirebaseUI.
@@ -19,7 +19,12 @@ const uiConfig = {
 	// Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
 	signInSuccessUrl: '/',
 	// We will display Google as auth providers.
-	signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+	signInOptions: [
+		{
+			provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			fullLabel: 'Sign in with Google',
+		},
+	],
 };
 
 interface LoginProps {}

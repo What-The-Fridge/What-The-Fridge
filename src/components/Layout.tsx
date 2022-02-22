@@ -7,10 +7,12 @@ import { useGetUserInfoQuery } from '../generated/graphql';
 import { useRouter } from 'next/router';
 import { useAppContext } from '../utils/context';
 import { CustomBreadcrumb } from './CustomBreadcrumb';
+import { useEffect } from 'react';
 
 interface LayoutProps {
 	path: string;
 	children: JSX.Element[] | JSX.Element;
+	disableAuth?: boolean;
 }
 
 export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
@@ -41,11 +43,26 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 		}
 	}
 
+	useEffect(() => {
+		// clear user info upon losing auth session
+		if (user == null)
+			value[1]({
+				createdAt: '',
+				email: '',
+				firebaseUserUID: '',
+				firstName: '',
+				id: 0,
+				imgUrl: '',
+				lastName: '',
+				tier: 0,
+			});
+	}, [user]);
+
 	return (
 		<Flex flexDirection="column">
 			<Navbar path={paths ? `/${paths[0]}` : '/'} />
 			<Box>
-				{user ? (
+				{user || props.disableAuth ? (
 					<Container maxW="container.sm" pt={16}>
 						<CustomBreadcrumb paths={paths} />
 						{props.children}

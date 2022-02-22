@@ -7,7 +7,7 @@ import { Wrapper } from '../../components/Wrapper';
 import { useCreateUserMutation, UserInput } from '../../generated/graphql';
 import { createUrqlClient } from '../../utils/createUrqlClient';
 
-import { getAuth } from 'firebase/auth';
+import { getAuth, signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseApp } from '../../components/Firebase';
 import { useRouter } from 'next/router';
@@ -17,7 +17,6 @@ interface CreateAccountProps {}
 export const CreateAccount: React.FC<CreateAccountProps> = ({}) => {
 	const router = useRouter();
 	const [, createUser] = useCreateUserMutation();
-	// , loading, error
 	const [user] = useAuthState(getAuth(firebaseApp));
 
 	return (
@@ -63,11 +62,25 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({}) => {
 							></InputField>
 							<Button
 								mt={8}
+								mr={8}
 								isLoading={props.isSubmitting}
 								type="submit"
 								colorScheme="teal"
 							>
 								Create Account
+							</Button>
+							<Button
+								mt={8}
+								isLoading={props.isSubmitting}
+								variant="outline"
+								colorScheme="red"
+								border="2px"
+								onClick={() => {
+									signOut(getAuth(firebaseApp));
+									router.push('/');
+								}}
+							>
+								Cancel
 							</Button>
 						</Form>
 					);
