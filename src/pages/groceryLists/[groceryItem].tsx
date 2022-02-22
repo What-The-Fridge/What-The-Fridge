@@ -145,7 +145,10 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 		const currTime = Date.now();
 		const storageRef = ref(
 			storage,
-			`groceryItems/${userEmail}/${file.name}${currTime}`
+			`groceryItems/${userEmail}/${file.name.replace(
+				/[^a-zA-Z0-9]/g,
+				''
+			)}${currTime}`
 		);
 		const snapshot = await uploadBytes(storageRef, file);
 		const downloadURL = await getDownloadURL(snapshot.ref);
@@ -192,7 +195,6 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 				// TODO: HANDLE CASES WHERE itemId is not passed
 				groceryItemId: parseInt(router.query.itemId as string),
 			}).then(response => {
-				console.log(response);
 				if (response.data?.updateGroceryItem.errors) {
 					alert('error!');
 					setErrors(toErrorMap(response.data.updateGroceryItem.errors));

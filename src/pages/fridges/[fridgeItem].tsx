@@ -156,7 +156,10 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 		const currTime = Date.now();
 		const storageRef = ref(
 			storage,
-			`fridgeItems/${userEmail}/${file.name}${currTime}`
+			`fridgeItems/${userEmail}/${file.name.replace(
+				/[^a-zA-Z0-9]/g,
+				''
+			)}${currTime}`
 		);
 		const snapshot = await uploadBytes(storageRef, file);
 		const downloadURL = await getDownloadURL(snapshot.ref);
@@ -207,7 +210,6 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 				// TODO: HANDLE CASES WHERE itemId is not passed
 				fridgeItemId: parseInt(router.query.itemId as string),
 			}).then(response => {
-				console.log(response);
 				if (response.data?.updateFridgeItem.errors) {
 					alert('error!');
 					setErrors(toErrorMap(response.data.updateFridgeItem.errors));

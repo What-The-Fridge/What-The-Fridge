@@ -24,8 +24,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 	function validateSize(input: any) {
 		if (input.files[0]) {
 			const fileSize = input.files[0].size / 1024 / 1024; // in MiB
-			if (fileSize > 2) {
-				alert('File size exceeds 2 MiB');
+			if (fileSize > 5) {
+				alert('File size exceeds 5 MiB');
 				(document.getElementById(props.name) as HTMLInputElement).value = ''; // clear the file
 			} else {
 				// Proceed further

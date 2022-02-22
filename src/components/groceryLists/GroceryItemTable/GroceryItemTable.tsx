@@ -18,6 +18,8 @@ import { Table } from '../../fridges/FridgeItemTable/FridgeItemTable';
 import { Styles } from '../../fridges/FridgeItemTable/TableStyles';
 import { useAppContext } from '../../../utils/context';
 import Link from 'next/link';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../../Firebase';
 
 export interface TableData {
 	img: null | undefined | string;
@@ -117,6 +119,21 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 	];
 
 	const data = useMemo(props.data ? props.data : noData, []);
+
+	// WARNING: this function works but would be better to find a better solution
+	// This wouldn't work if file url contains special characters
+	// We have removed all special characters from the files' names before upload
+	function getPathStorageFromUrl(url: String) {
+		const baseUrl =
+			'https://firebasestorage.googleapis.com/v0/b/whatthefridge-fa945.appspot.com/o/';
+
+		let imagePath: string = url.replace(baseUrl, '');
+		const indexOfEndPath = imagePath.indexOf('?');
+		imagePath = imagePath.substring(0, indexOfEndPath);
+		imagePath = imagePath.replaceAll('%2F', '/');
+		imagePath = imagePath.replaceAll('%40', '@');
+		return imagePath;
+	}
 
 	useEffect(() => {}, []);
 
@@ -277,13 +294,41 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 						for (let i = 0; i < selectedRows.length; i++) {
 							let element = selectedRows[i];
 							await deleteGroceryItem({ groceryItemId: element.original.id })
-								.then(response => {
+								.then(async response => {
 									if (response.data?.deleteGroceryItem.errors) {
 										success = false;
 										alert(
 											'errors encountered while deleting selected item(s)!'
 										);
-									} else if (
+									}
+
+									// ----------------
+									// delete images from firebase
+									// Create a reference to the file to delete
+									getPathStorageFromUrl(element.original.img);
+									const desertRef = ref(
+										storage,
+										getPathStorageFromUrl(element.original.img)
+									);
+
+									// Delete the file
+									await deleteObject(desertRef)
+										.then(() => {
+											// File deleted successfully
+										})
+										.catch(error => {
+											success = false;
+											alert(
+												'error!' +
+													error.toString() +
+													', please report to the developers'
+											);
+										});
+									// ----------------
+
+									// no errors && at the end of deletion
+									if (
+										!response.data?.deleteGroceryItem.errors &&
 										response.data?.deleteGroceryItem.success &&
 										success &&
 										i == selectedRows.length - 1
