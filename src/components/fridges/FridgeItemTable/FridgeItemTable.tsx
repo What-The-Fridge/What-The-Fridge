@@ -14,8 +14,10 @@ import {
 	Image,
 	Input,
 	Select,
+	Stack,
 	Text,
 	useColorMode,
+	VStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useSticky } from 'react-table-sticky';
@@ -94,6 +96,10 @@ export const Table: React.FC<TableProps> = ({
 				// Let's make a column for selection
 				{
 					id: 'selection',
+					disableResizing: true,
+					minWidth: 30,
+					width: 30,
+					maxWidth: 30,
 					// The header can use the table's getToggleAllRowsSelectedProps method
 					// to render a checkbox
 					Header: ({ getToggleAllRowsSelectedProps }) => (
@@ -116,113 +122,128 @@ export const Table: React.FC<TableProps> = ({
 
 	// Render the UI for your table
 	return (
-		<>
-			<div {...getTableProps()} className="table sticky">
-				{/* set selected rows */}
-				{setSelectedRows(selectedFlatRows)}
-				<div className="header">
-					{headerGroups.map(headerGroup => (
-						<div {...headerGroup.getHeaderGroupProps()} className="tr">
-							{headerGroup.headers.map(column => (
-								<div
-									{...column.getHeaderProps(column.getSortByToggleProps())}
-									className="th"
-								>
-									<Center>
-										{column.render('Header')}
-										{column.id !== 'img' ? (
-											<span>
-												{column.isSorted ? (
-													column.isSortedDesc ? (
-														<FaSortDown />
+		<VStack>
+			<>
+				<div {...getTableProps()} className="table sticky">
+					{/* set selected rows */}
+					{setSelectedRows(selectedFlatRows)}
+					<div className="header">
+						{headerGroups.map(headerGroup => (
+							<div {...headerGroup.getHeaderGroupProps()} className="tr">
+								{headerGroup.headers.map(column => (
+									<div
+										{...column.getHeaderProps(column.getSortByToggleProps())}
+										className="th"
+									>
+										<Center>
+											{column.render('Header')}
+											{column.id !== 'img' ? (
+												<span>
+													{column.isSorted ? (
+														column.isSortedDesc ? (
+															<FaSortDown />
+														) : (
+															<FaSortUp />
+														)
+													) : column.id !== 'selection' ? (
+														<FaSort />
 													) : (
-														<FaSortUp />
-													)
-												) : column.id !== 'selection' ? (
-													<FaSort />
-												) : (
-													''
-												)}
-											</span>
-										) : null}
-										{/* Add a sort direction indicator */}
-									</Center>
-								</div>
-							))}
-						</div>
-					))}
-				</div>
-				<div {...getTableBodyProps()} className="body">
-					{page.map(row => {
-						prepareRow(row);
-						return (
-							<div {...row.getRowProps()} className="tr">
-								{row.cells.map(cell => (
-									<div {...cell.getCellProps()} className="td">
-										{cell.render('Cell')}
+														''
+													)}
+												</span>
+											) : null}
+											{/* Add a sort direction indicator */}
+										</Center>
 									</div>
 								))}
 							</div>
-						);
-					})}
+						))}
+					</div>
+					<div {...getTableBodyProps()} className="body">
+						{page.map(row => {
+							prepareRow(row);
+							return (
+								<div {...row.getRowProps()} className="tr">
+									{row.cells.map(cell => (
+										<div {...cell.getCellProps()} className="td">
+											{cell.render('Cell')}
+										</div>
+									))}
+								</div>
+							);
+						})}
+					</div>
 				</div>
-			</div>
-			{/* 
+				{/* 
         Pagination can be built however you'd like. 
         This is just a very basic UI implementation:
       */}
-			<Center mt={8 / 2}>
-				<HStack className="pagination">
-					<Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-						<FiChevronsLeft />
-					</Button>{' '}
-					<Button onClick={() => previousPage()} disabled={!canPreviousPage}>
-						<FiChevronLeft />
-					</Button>{' '}
-					<Button onClick={() => nextPage()} disabled={!canNextPage}>
-						<FiChevronRight />
-					</Button>{' '}
-					<Button
-						onClick={() => gotoPage(pageCount - 1)}
-						disabled={!canNextPage}
-					>
-						<FiChevronsRight />
-					</Button>{' '}
-					<Box>
-						Page{' '}
-						<strong>
-							{pageIndex + 1} of {pageOptions.length}
-						</strong>{' '}
-					</Box>
-					<Box>
-						| Go to page:{' '}
-						<Input
-							type="number"
-							defaultValue={pageIndex + 1}
-							onChange={e => {
-								const page = e.target.value ? Number(e.target.value) - 1 : 0;
-								gotoPage(page);
-							}}
-							style={{ width: '60px' }}
-						/>
-					</Box>{' '}
-					<Box width="110px">
-						<Select
-							value={pageSize}
-							onChange={e => {
-								setPageSize(Number(e.target.value));
-							}}
-						>
-							{[5, 10, 20, 30, 40, 50].map(pageSize => (
-								<option key={pageSize} value={pageSize}>
-									Show {pageSize}
-								</option>
-							))}
-						</Select>
-					</Box>
-				</HStack>
-			</Center>
-		</>
+				<Center mt={8 / 2}>
+					<Stack direction={'column'} className="pagination">
+						<Center>
+							<HStack>
+								<Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+									<FiChevronsLeft />
+								</Button>{' '}
+								<Button
+									onClick={() => previousPage()}
+									disabled={!canPreviousPage}
+								>
+									<FiChevronLeft />
+								</Button>{' '}
+								<Button onClick={() => nextPage()} disabled={!canNextPage}>
+									<FiChevronRight />
+								</Button>{' '}
+								<Button
+									onClick={() => gotoPage(pageCount - 1)}
+									disabled={!canNextPage}
+								>
+									<FiChevronsRight />
+								</Button>{' '}
+								<Box>
+									Page{' '}
+									<strong>
+										{pageIndex + 1} of {pageOptions.length}
+									</strong>{' '}
+								</Box>
+							</HStack>
+						</Center>
+						<Center>
+							<HStack>
+								<Box>
+									Go to page:{' '}
+									<Input
+										type="number"
+										defaultValue={pageIndex + 1}
+										onChange={e => {
+											const page = e.target.value
+												? Number(e.target.value) - 1
+												: 0;
+											gotoPage(page);
+										}}
+										style={{ width: '60px' }}
+									/>
+								</Box>{' '}
+								<Box width="110px">
+									<Select
+										value={pageSize}
+										onChange={e => {
+											setPageSize(Number(e.target.value));
+										}}
+									>
+										{[5, 10, 20, 30, 40, 50].map(pageSize => (
+											<option key={pageSize} value={pageSize}>
+												Show {pageSize}
+											</option>
+										))}
+									</Select>
+								</Box>
+							</HStack>
+						</Center>
+					</Stack>
+				</Center>
+			</>
+		</VStack>
 	);
 };
 
@@ -249,6 +270,11 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 	const { colorMode } = useColorMode();
 	const isDark = colorMode === 'dark';
 
+	// TODO: phone view is still static, changes on resize
+	var viewport_width = window.innerWidth;
+	const phoneSize = 768;
+	var isMobile = viewport_width < phoneSize;
+
 	const centeredText = (text: string) => {
 		return (
 			<Center style={{ height: '100%' }}>
@@ -263,14 +289,15 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				Header: centeredText('Image'),
 				accessor: 'img',
 				disableFilters: true,
+				width: isMobile ? 145 : 250,
 				Cell: (props: any) => {
 					if (props.row.original.img)
 						return (
 							<Center>
 								<Image
 									src={props.row.original.img}
-									maxWidth="200"
-									maxHeight="200"
+									maxWidth={{ base: '145', md: '250', lg: '250' }}
+									maxHeight={{ base: '145', md: '250', lg: '250' }}
 									alt="Player"
 								/>
 							</Center>
@@ -282,6 +309,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 			{
 				Header: centeredText('Name'),
 				accessor: 'name',
+				width: isMobile ? 80 : 150,
 				Cell: (props: any) => {
 					if (props.row.original.name)
 						return centeredText(props.row.original.name);
@@ -289,8 +317,9 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				},
 			},
 			{
-				Header: centeredText('Quantity'),
+				Header: centeredText(isMobile ? 'QTY' : 'Quantity'),
 				accessor: 'quantity',
+				width: isMobile ? 65 : 150,
 				Cell: (props: any) => {
 					if (props.row.original.quantity && props.row.original.unit)
 						return centeredText(
@@ -300,11 +329,14 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				},
 			},
 			{
-				Header: centeredText('Days left'),
+				Header: centeredText(isMobile ? 'EXP' : 'Days left'),
 				accessor: 'daysLeftUntilExpiry',
+				width: isMobile ? 65 : 150,
 				Cell: (props: any) => {
 					if (props.row.original.daysLeftUntilExpiry)
-						return centeredText(props.row.original.daysLeftUntilExpiry);
+						return centeredText(
+							`${props.row.original.daysLeftUntilExpiry} days`
+						);
 					return centeredText('-');
 				},
 			},
@@ -344,7 +376,7 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 	useEffect(() => {}, []);
 
 	return (
-		<Box>
+		<VStack spacing={8}>
 			<Center>
 				<Styles isDark={isDark} key={props.rerenderTime}>
 					<Table
@@ -355,10 +387,10 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					/>
 				</Styles>
 			</Center>
-			<Center mt={8 / 2}>
+
+			<Stack direction={['column', 'row']} spacing={2}>
 				<Button
-					mb={8 / 2}
-					mr={8 / 2}
+					variant="outline"
 					colorScheme="teal"
 					border="2px"
 					onClick={() => {
@@ -371,8 +403,6 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					Add fridge item
 				</Button>
 				<Button
-					mb={8 / 2}
-					mr={8 / 2}
 					disabled={selectedRows.length != 1}
 					variant="outline"
 					colorScheme="orange"
@@ -394,7 +424,6 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 					Edit Selected
 				</Button>
 				<Button
-					mb={8 / 2}
 					disabled={selectedRows.length == 0}
 					variant="outline"
 					colorScheme="red"
@@ -458,8 +487,8 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 				>
 					Delete Selected
 				</Button>
-			</Center>
-		</Box>
+			</Stack>
+		</VStack>
 	);
 };
 

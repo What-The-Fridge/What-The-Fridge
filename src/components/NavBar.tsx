@@ -21,6 +21,7 @@ import { getAuth, signOut, User } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { firebaseApp } from './Firebase';
 import { HamburgerIcon } from '@chakra-ui/icons';
+import { useRouter } from 'next/router';
 
 interface NavbarProps {
 	path: string;
@@ -54,8 +55,9 @@ const NavLink: React.FC<NavLinkProps> = (props): JSX.Element => {
 };
 
 const NavigationMenu: React.FC<NavigationMenuProps> = (props): JSX.Element => {
+	const router = useRouter();
 	return (
-		<Menu>
+		<Menu autoSelect={false}>
 			<MenuButton
 				as={IconButton}
 				aria-label="Options"
@@ -63,12 +65,12 @@ const NavigationMenu: React.FC<NavigationMenuProps> = (props): JSX.Element => {
 				variant="outline"
 			/>
 			<MenuList>
-				<MenuItem>
+				<MenuItem onClick={() => router.push('/fridges')}>
 					<NavLink href={'/fridges'} toggleOn={props.path === '/fridges'}>
 						My fridges
 					</NavLink>
 				</MenuItem>
-				<MenuItem>
+				<MenuItem onClick={() => router.push('/groceryLists')}>
 					<NavLink
 						href={'/groceryLists'}
 						toggleOn={props.path === '/groceryLists'}
@@ -76,7 +78,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = (props): JSX.Element => {
 						Grocery list
 					</NavLink>
 				</MenuItem>
-				<MenuItem>
+				<MenuItem onClick={() => router.push('/recipes')}>
 					<NavLink href={'/recipes'} toggleOn={props.path === '/recipes'}>
 						Recipes
 					</NavLink>

@@ -5,8 +5,10 @@ import {
 	Center,
 	Image,
 	Select,
+	Stack,
 	Text,
 	useColorMode,
+	VStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import {
@@ -49,6 +51,11 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 	const { colorMode } = useColorMode();
 	const isDark = colorMode === 'dark';
 
+	// TODO: phone view is still static, changes on resize
+	var viewport_width = window.innerWidth;
+	const phoneSize = 768;
+	var isMobile = viewport_width < phoneSize;
+
 	const centeredText = (text: string) => {
 		return (
 			<Center style={{ height: '100%' }}>
@@ -63,14 +70,15 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 				Header: centeredText('Image'),
 				accessor: 'img',
 				disableFilters: true,
+				width: isMobile ? 145 : 250,
 				Cell: (props: any) => {
 					if (props.row.original.img)
 						return (
 							<Center>
 								<Image
 									src={props.row.original.img}
-									maxWidth="200"
-									maxHeight="200"
+									maxWidth={{ base: '150', md: '250', lg: '250' }}
+									maxHeight={{ base: '150', md: '250', lg: '250' }}
 									alt="Player"
 								/>
 							</Center>
@@ -82,6 +90,7 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 			{
 				Header: centeredText('Name'),
 				accessor: 'name',
+				width: isMobile ? 80 : 150,
 				Cell: (props: any) => {
 					if (props.row.original.name)
 						return centeredText(props.row.original.name);
@@ -89,8 +98,9 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 				},
 			},
 			{
-				Header: centeredText('Quantity'),
+				Header: centeredText(isMobile ? 'QTY' : 'Quantity'),
 				accessor: 'quantity',
+				width: isMobile ? 70 : 150,
 				Cell: (props: any) => {
 					if (props.row.original.quantity && props.row.original.unit)
 						return centeredText(
@@ -234,7 +244,7 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 	};
 
 	return (
-		<Box>
+		<VStack spacing={8}>
 			<Center>
 				<Styles isDark={isDark} key={props.rerenderTime}>
 					<Table
@@ -245,10 +255,9 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 					/>
 				</Styles>
 			</Center>
-			<Center mt={8 / 2}>
+			<Stack direction={['column', 'row']} spacing={2}>
 				<Button
-					mb={8 / 2}
-					mr={8 / 2}
+					variant="outline"
 					colorScheme="teal"
 					border="2px"
 					onClick={() => {
@@ -261,8 +270,6 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 					Add grocery list item
 				</Button>
 				<Button
-					mb={8 / 2}
-					mr={8 / 2}
 					disabled={selectedRows.length != 1}
 					variant="outline"
 					colorScheme="orange"
@@ -284,7 +291,6 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 					Edit Selected
 				</Button>
 				<Button
-					mb={8 / 2}
 					disabled={selectedRows.length == 0}
 					variant="outline"
 					colorScheme="red"
@@ -348,7 +354,7 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 				>
 					Delete Selected
 				</Button>
-			</Center>
+			</Stack>
 			<Center>
 				<Button
 					disabled={selectedRows.length == 0}
@@ -366,7 +372,7 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 				</Text>
 				{renderUserFridges()}
 			</Center>
-		</Box>
+		</VStack>
 	);
 };
 

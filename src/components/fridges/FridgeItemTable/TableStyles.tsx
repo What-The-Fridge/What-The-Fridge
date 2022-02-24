@@ -8,6 +8,7 @@ export const Styles = styled.div<TableStyleProps>`
 	.table {
 		border: 1px solid black;
 		max-height: 500px;
+
 		overflow: auto;
 
 		.tr {
