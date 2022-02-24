@@ -1,4 +1,14 @@
-import { Box, Center, Container, Flex, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Button,
+	Center,
+	Container,
+	Flex,
+	HStack,
+	Link,
+	Text,
+	VStack,
+} from '@chakra-ui/react';
 import { Navbar } from './NavBar';
 import { getAuth } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -8,6 +18,7 @@ import { useRouter } from 'next/router';
 import { useAppContext } from '../utils/context';
 import { CustomBreadcrumb } from './CustomBreadcrumb';
 import { useEffect } from 'react';
+import NextLink from 'next/link';
 
 interface LayoutProps {
 	path: string;
@@ -69,7 +80,24 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 					</Container>
 				) : (
 					<Center pt={20}>
-						<Text>You do not have permission to access this page.</Text>
+						<VStack spacing={8}>
+							<Text>Permission denied!</Text>
+							<Center>
+								<HStack>
+									<Button variant="outline" colorScheme="teal" border="2px">
+										<NextLink href={'/account/login'} passHref>
+											<Link>Login</Link>
+										</NextLink>
+									</Button>
+									<Text>or</Text>
+									<Button variant="outline" colorScheme="teal" border="2px">
+										<NextLink href={'/account/login'} passHref>
+											<Link>Sign up</Link>
+										</NextLink>
+									</Button>
+								</HStack>
+							</Center>
+						</VStack>
 					</Center>
 				)}
 			</Box>

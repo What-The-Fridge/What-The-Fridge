@@ -55,7 +55,9 @@ export const CreateGroceryList: React.FC<CreateGroceryListProps> = ({}) => {
 									mt={8}
 									isLoading={props.isSubmitting}
 									type="submit"
+									variant="outline"
 									colorScheme="teal"
+									border="2px"
 								>
 									Submit
 								</Button>

@@ -78,7 +78,9 @@ export const Login: React.FC<LoginProps> = ({}) => {
 							m={4}
 							isLoading={props.isSubmitting}
 							type="submit"
+							variant="outline"
 							colorScheme="teal"
+							border="2px"
 						>
 							Login
 						</Button>

@@ -312,7 +312,9 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 							<HStack width="full">
 								<Button
 									type="submit"
+									variant="outline"
 									colorScheme="teal"
+									border="2px"
 									isLoading={props.isSubmitting}
 								>
 									{isCreation ? 'Submit' : 'Update'}

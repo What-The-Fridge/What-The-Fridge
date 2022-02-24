@@ -229,8 +229,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					<Button
 						isLoading
 						loadingText="Loading"
-						colorScheme="teal"
 						variant="outline"
+						colorScheme="teal"
+						border="2px"
 						spinnerPlacement="start"
 					/>
 				</Center>
@@ -359,7 +360,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 							<HStack width="full">
 								<Button
 									type="submit"
+									variant="outline"
 									colorScheme="teal"
+									border="2px"
 									isLoading={props.isSubmitting}
 								>
 									{isCreation ? 'Submit' : 'Update'}

@@ -65,7 +65,9 @@ export const CreateAccount: React.FC<CreateAccountProps> = ({}) => {
 								mr={8}
 								isLoading={props.isSubmitting}
 								type="submit"
+								variant="outline"
 								colorScheme="teal"
+								border="2px"
 							>
 								Create Account
 							</Button>

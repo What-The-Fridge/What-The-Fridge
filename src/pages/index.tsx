@@ -6,6 +6,8 @@ import { Layout } from '../components/Layout';
 import { useAppContext } from '../utils/context';
 import ImageSlider from '../components/ImageSlider';
 import { useRouter } from 'next/router';
+import { BiFridge } from 'react-icons/bi';
+import { GoChecklist } from 'react-icons/go';
 
 const Landing = () => {
 	const value = useAppContext();
@@ -16,12 +18,34 @@ const Landing = () => {
 			{
 				src: '/landingPage/1.png',
 				text: 'Keep track of your food items',
-				action: <Button>hi 1</Button>,
+				action: (
+					<Button
+						variant="outline"
+						colorScheme="teal"
+						border="2px"
+						onClick={() => {
+							router.push('/fridges');
+						}}
+					>
+						<BiFridge />
+					</Button>
+				),
 			},
 			{
 				src: '/landingPage/2.png',
 				text: 'Make shopping lists',
-				action: <Button>hi 2</Button>,
+				action: (
+					<Button
+						variant="outline"
+						colorScheme="teal"
+						border="2px"
+						onClick={() => {
+							router.push('/groceryLists');
+						}}
+					>
+						<GoChecklist />
+					</Button>
+				),
 			},
 		];
 
@@ -42,7 +66,10 @@ const Landing = () => {
 				<Box mt={8}>{renderPreviewImages()}</Box>
 				{value[0].firstName ? null : (
 					<Button
+						mt={8}
+						variant="outline"
 						colorScheme="teal"
+						border="2px"
 						onClick={() => {
 							router.push('/account/register');
 						}}

@@ -71,7 +71,9 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 					</Text>
 					<Button
 						mt={8}
+						variant="outline"
 						colorScheme="teal"
+						border="2px"
 						onClick={() => {
 							router.push({
 								pathname: `/groceryLists/createGroceryList`,
@@ -107,9 +109,7 @@ export const GroceryList: React.FC<GroceryListProps> = ({}) => {
 							);
 						}
 					)}
-					<option value={'createNewGroceryList'}>
-						Create a new grocery list +{' '}
-					</option>
+					<option value={'createNewGroceryList'}>New grocery list + </option>
 				</Select>
 				<Box ml={8}>
 					<Button

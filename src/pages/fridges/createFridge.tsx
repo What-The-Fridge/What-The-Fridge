@@ -55,7 +55,9 @@ export const CreateFridge: React.FC<CreateFridgeProps> = ({}) => {
 									mt={8}
 									isLoading={props.isSubmitting}
 									type="submit"
+									variant="outline"
 									colorScheme="teal"
+									border="2px"
 								>
 									Submit
 								</Button>

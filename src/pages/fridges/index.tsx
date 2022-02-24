@@ -77,7 +77,9 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 					</Text>
 					<Button
 						mt={8}
+						variant="outline"
 						colorScheme="teal"
+						border="2px"
 						icon={<AddIcon />}
 						onClick={() => {
 							router.push({
@@ -111,7 +113,7 @@ export const Fridges: React.FC<CreateFridgeProps> = ({}) => {
 							</option>
 						);
 					})}
-					<option value={'createNewFridge'}>Create a new fridge + </option>
+					<option value={'createNewFridge'}>New fridge + </option>
 				</Select>
 				<Box ml={8}>
 					<Button
