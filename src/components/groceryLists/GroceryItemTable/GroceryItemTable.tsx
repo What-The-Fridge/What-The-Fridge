@@ -129,21 +129,6 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 
 	const data = useMemo(props.data ? props.data : noData, []);
 
-	// WARNING: this function works but would be better to find a better solution
-	// This wouldn't work if file url contains special characters
-	// We have removed all special characters from the files' names before upload
-	function getPathStorageFromUrl(url: String) {
-		const baseUrl =
-			'https://firebasestorage.googleapis.com/v0/b/whatthefridge-fa945.appspot.com/o/';
-
-		let imagePath: string = url.replace(baseUrl, '');
-		const indexOfEndPath = imagePath.indexOf('?');
-		imagePath = imagePath.substring(0, indexOfEndPath);
-		imagePath = imagePath.replaceAll('%2F', '/');
-		imagePath = imagePath.replaceAll('%40', '@');
-		return imagePath;
-	}
-
 	useEffect(() => {}, []);
 
 	// user fridges
