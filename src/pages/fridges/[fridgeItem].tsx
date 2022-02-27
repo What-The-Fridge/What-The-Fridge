@@ -31,6 +31,7 @@ import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
 import { toErrorMap } from '../../components/ToErrorMap';
 import { CustomDatePicker } from '../../components/CustomDatePicker';
+import { deleteImageByUrl } from '../../components/DeleteImageByUrl';
 
 interface CreateFridgeItemProps {}
 interface FormInitialValues {
@@ -47,6 +48,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 	const [, createFridgeItem] = useCreateFridgeItemMutation();
 	const [, updateFridgeItem] = useUpdateFridgeItemMutation();
 	const [rerenderForm, setRerenderForm] = useState(0);
+	const [previousFileValue, setPreviousFileValue] = useState<string | null>(
+		null
+	);
 
 	const [formInitialValues, setFormInitialValues] = useState<FormInitialValues>(
 		{
@@ -113,6 +117,9 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 					: '',
 			});
 			setRerenderForm(rerenderForm + 1);
+			setPreviousFileValue(
+				detailedFridgeItem?.imgUrl ? detailedFridgeItem?.imgUrl : null
+			);
 		}
 	}, [fridgeItemById, measurementTypes]);
 
@@ -191,6 +198,12 @@ export const CreateFridgeItem: React.FC<CreateFridgeItemProps> = ({}) => {
 			purchasedDate: values.purchasedDate == '' ? null : values.purchasedDate,
 			expiryDate: values.expiryDate == '' ? null : values.expiryDate,
 		};
+
+		// delete the previous image from firebase only if the image was updated
+		if (previousFileValue != imgUrl) await deleteImageByUrl(previousFileValue);
+
+		// set the prev to the current image
+		setPreviousFileValue(imgUrl);
 
 		if (isCreation) {
 			await createFridgeItem({

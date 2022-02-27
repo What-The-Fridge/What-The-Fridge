@@ -30,6 +30,7 @@ import { FileUpload } from '../../components/FileUpload';
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { storage } from '../../components/Firebase';
 import { toErrorMap } from '../../components/ToErrorMap';
+import { deleteImageByUrl } from '../../components/DeleteImageByUrl';
 
 interface CreateGroceryItemProps {}
 interface FormInitialValues {
@@ -44,6 +45,9 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 	const [, createGroceryItem] = useCreateGroceryItemMutation();
 	const [, updateGroceryItem] = useUpdateGroceryItemMutation();
 	const [rerenderForm, setRerenderForm] = useState(0);
+	const [previousFileValue, setPreviousFileValue] = useState<string | null>(
+		null
+	);
 
 	const [formInitialValues, setFormInitialValues] = useState<FormInitialValues>(
 		{
@@ -102,6 +106,9 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 				file: detailedGroceryItem?.imgUrl ? detailedGroceryItem?.imgUrl : '',
 			});
 			setRerenderForm(rerenderForm + 1);
+			setPreviousFileValue(
+				detailedGroceryItem?.imgUrl ? detailedGroceryItem?.imgUrl : null
+			);
 		}
 	}, [groceryItemById, measurementTypes]);
 
@@ -176,6 +183,12 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 			imgUrl: imgUrl,
 			upc: values.upc == '' ? null : values.upc,
 		};
+
+		// delete the previous image from firebase only if the image was updated
+		if (previousFileValue != imgUrl) await deleteImageByUrl(previousFileValue);
+
+		// set the prev to the current image
+		setPreviousFileValue(imgUrl);
 
 		if (isCreation) {
 			await createGroceryItem({

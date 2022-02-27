@@ -30,8 +30,7 @@ import {
 	FiChevronsRight,
 } from 'react-icons/fi';
 import { Styles } from './TableStyles';
-import { ref, deleteObject } from 'firebase/storage';
-import { storage } from '../../Firebase';
+import { deleteImageByUrl } from '../../DeleteImageByUrl';
 
 interface Props {
 	indeterminate?: boolean;
@@ -358,21 +357,6 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 
 	const data = useMemo(props.data ? props.data : noData, []);
 
-	// WARNING: this function works but would be better to find a better solution
-	// This wouldn't work if file url contains special characters
-	// We have removed all special characters from the files' names before upload
-	function getPathStorageFromUrl(url: String) {
-		const baseUrl =
-			'https://firebasestorage.googleapis.com/v0/b/whatthefridge-fa945.appspot.com/o/';
-
-		let imagePath: string = url.replace(baseUrl, '');
-		const indexOfEndPath = imagePath.indexOf('?');
-		imagePath = imagePath.substring(0, indexOfEndPath);
-		imagePath = imagePath.replaceAll('%2F', '/');
-		imagePath = imagePath.replaceAll('%40', '@');
-		return imagePath;
-	}
-
 	useEffect(() => {}, []);
 
 	return (
@@ -441,29 +425,8 @@ const FridgeItemTable = (props: FridgeItemTableProps) => {
 										);
 									}
 
-									// ----------------
-									// delete images from firebase
-									// Create a reference to the file to delete
-									getPathStorageFromUrl(element.original.img);
-									const desertRef = ref(
-										storage,
-										getPathStorageFromUrl(element.original.img)
-									);
-
-									// Delete the file
-									await deleteObject(desertRef)
-										.then(() => {
-											// File deleted successfully
-										})
-										.catch(error => {
-											success = false;
-											alert(
-												'error!' +
-													error.toString() +
-													', please report to the developers'
-											);
-										});
-									// ----------------
+									// delete the images from firebase
+									success = await deleteImageByUrl(element.original.img);
 
 									// no errors && at the end of deletion
 									if (

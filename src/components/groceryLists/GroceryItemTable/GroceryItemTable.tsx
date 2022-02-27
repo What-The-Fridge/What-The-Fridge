@@ -20,8 +20,7 @@ import { Table } from '../../fridges/FridgeItemTable/FridgeItemTable';
 import { Styles } from '../../fridges/FridgeItemTable/TableStyles';
 import { useAppContext } from '../../../utils/context';
 import Link from 'next/link';
-import { ref, deleteObject } from 'firebase/storage';
-import { storage } from '../../Firebase';
+import { deleteImageByUrl } from '../../DeleteImageByUrl';
 
 export interface TableData {
 	img: null | undefined | string;
@@ -308,29 +307,8 @@ const GroceryItemTable = (props: GroceryItemTableProps) => {
 										);
 									}
 
-									// ----------------
-									// delete images from firebase
-									// Create a reference to the file to delete
-									getPathStorageFromUrl(element.original.img);
-									const desertRef = ref(
-										storage,
-										getPathStorageFromUrl(element.original.img)
-									);
-
-									// Delete the file
-									await deleteObject(desertRef)
-										.then(() => {
-											// File deleted successfully
-										})
-										.catch(error => {
-											success = false;
-											alert(
-												'error!' +
-													error.toString() +
-													', please report to the developers'
-											);
-										});
-									// ----------------
+									// delete the images from firebase
+									success = await deleteImageByUrl(element.original.img);
 
 									// no errors && at the end of deletion
 									if (
