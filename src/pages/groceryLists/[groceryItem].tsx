@@ -185,7 +185,7 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 		};
 
 		// delete the previous image from firebase only if the image was updated
-		if (previousFileValue != imgUrl) await deleteImageByUrl(previousFileValue);
+		if (!isCreation) await deleteImageByUrl(previousFileValue);
 
 		// set the prev to the current image
 		setPreviousFileValue(imgUrl);
@@ -315,7 +315,7 @@ export const CreateGroceryItem: React.FC<CreateGroceryItemProps> = ({}) => {
 											mt="3"
 											color={useColorModeValue('gray.500', 'whiteAlpha.600')}
 										>
-											.jpg, .gif, or .png. Max file size 2MiB.
+											.jpg, .gif, or .png. Max file size 10MiB.
 										</Text>
 									</Box>
 								</VStack>
