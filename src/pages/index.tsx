@@ -16,7 +16,7 @@ const Landing = () => {
 	const value = useAppContext();
 	const router = useRouter();
 
-	const [signInWithEmailAndPassword, user, loading, error] =
+	const [signInWithEmailAndPassword, _, loading] =
 		useSignInWithEmailAndPassword(getAuth(firebaseApp));
 
 	const renderPreviewImages = () => {
