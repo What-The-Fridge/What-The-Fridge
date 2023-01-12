@@ -32,8 +32,9 @@ interface LoginProps {}
 export const Login: React.FC<LoginProps> = ({}) => {
 	const router = useRouter();
 	const [submitted, setSubmitted] = useState(false);
-	const [signInWithEmailAndPassword, user, loading, error] =
-		useSignInWithEmailAndPassword(getAuth(firebaseApp));
+	const [signInWithEmailAndPassword, user] = useSignInWithEmailAndPassword(
+		getAuth(firebaseApp)
+	);
 
 	useEffect(() => {
 		const timeId = setTimeout(() => {
@@ -52,7 +53,7 @@ export const Login: React.FC<LoginProps> = ({}) => {
 
 	return (
 		<Wrapper variant="small">
-			<Formik
+			{/* <Formik
 				initialValues={{ email: '', password: '' }}
 				onSubmit={async values => {
 					signInWithEmailAndPassword(values.email, values.password);
@@ -88,9 +89,27 @@ export const Login: React.FC<LoginProps> = ({}) => {
 						{submitted && error ? <p>{error.message}</p> : null}
 					</Form>
 				)}
-			</Formik>
+			</Formik> */}
 			<hr />
 			<StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+			<Button
+				m={4}
+				type="submit"
+				variant="outline"
+				colorScheme="teal"
+				border="2px"
+				isLoading={submitted}
+				onClick={async () => {
+					console.log(process.env.NEXT_PUBLIC_FREE_ACCOUNT);
+					signInWithEmailAndPassword(
+						process.env.NEXT_PUBLIC_FREE_ACCOUNT!,
+						process.env.NEXT_PUBLIC_FREE_ACCOUNT_PW!
+					);
+					setSubmitted(true);
+				}}
+			>
+				Try out for fun (no account required)
+			</Button>
 		</Wrapper>
 	);
 };

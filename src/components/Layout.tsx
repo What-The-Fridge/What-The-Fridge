@@ -11,7 +11,10 @@ import {
 } from '@chakra-ui/react';
 import { Navbar } from './NavBar';
 import { getAuth } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import {
+	useAuthState,
+	useSignInWithEmailAndPassword,
+} from 'react-firebase-hooks/auth';
 import { firebaseApp } from './Firebase';
 import { useGetUserInfoQuery } from '../generated/graphql';
 import { useRouter } from 'next/router';
@@ -30,6 +33,8 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 	const router = useRouter();
 	const value = useAppContext();
 	const [user] = useAuthState(getAuth(firebaseApp));
+	const [signInWithEmailAndPassword, _, loading] =
+		useSignInWithEmailAndPassword(getAuth(firebaseApp));
 	let paths: string[] | undefined = props.path.split('/').slice(1);
 
 	if (paths.length === 1 && paths[0] === '') {
@@ -81,7 +86,7 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 				) : (
 					<Center pt={20}>
 						<VStack spacing={8}>
-							<Text>Permission denied!</Text>
+							<Text>You're currently not logged in!</Text>
 							<Center>
 								<HStack>
 									<Button variant="outline" colorScheme="teal" border="2px">
@@ -97,6 +102,22 @@ export const Layout: React.FC<LayoutProps> = (props): JSX.Element => {
 									</Button>
 								</HStack>
 							</Center>
+							<Button
+								m={4}
+								type="submit"
+								variant="outline"
+								colorScheme="teal"
+								border="2px"
+								isLoading={loading}
+								onClick={async () => {
+									signInWithEmailAndPassword(
+										process.env.NEXT_PUBLIC_FREE_ACCOUNT!,
+										process.env.NEXT_PUBLIC_FREE_ACCOUNT_PW!
+									);
+								}}
+							>
+								Try out for fun (no account required)
+							</Button>
 						</VStack>
 					</Center>
 				)}

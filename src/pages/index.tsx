@@ -8,10 +8,16 @@ import ImageSlider from '../components/ImageSlider';
 import { useRouter } from 'next/router';
 import { BiFridge } from 'react-icons/bi';
 import { GoChecklist } from 'react-icons/go';
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { getAuth } from 'firebase/auth';
+import { firebaseApp } from '../components/Firebase';
 
 const Landing = () => {
 	const value = useAppContext();
 	const router = useRouter();
+
+	const [signInWithEmailAndPassword, user, loading, error] =
+		useSignInWithEmailAndPassword(getAuth(firebaseApp));
 
 	const renderPreviewImages = () => {
 		const slides = [
@@ -65,17 +71,37 @@ const Landing = () => {
 				</Heading>
 				<Box mt={8}>{renderPreviewImages()}</Box>
 				{value[0].firstName ? null : (
-					<Button
-						mt={8}
-						variant="outline"
-						colorScheme="teal"
-						border="2px"
-						onClick={() => {
-							router.push('/account/register');
-						}}
-					>
-						Register your account
-					</Button>
+					<Box display={'flex'} flexDirection="column" alignItems="center">
+						<Button
+							mt={8}
+							variant="outline"
+							colorScheme="teal"
+							border="2px"
+							onClick={() => {
+								router.push('/account/register');
+							}}
+						>
+							Register your account
+						</Button>
+						<br />
+						or
+						<Button
+							m={4}
+							type="submit"
+							variant="outline"
+							colorScheme="teal"
+							border="2px"
+							isLoading={loading}
+							onClick={async () => {
+								signInWithEmailAndPassword(
+									process.env.NEXT_PUBLIC_FREE_ACCOUNT!,
+									process.env.NEXT_PUBLIC_FREE_ACCOUNT_PW!
+								);
+							}}
+						>
+							Try out for fun (no account required)
+						</Button>
+					</Box>
 				)}
 			</Box>
 		</Layout>
