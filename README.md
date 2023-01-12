@@ -1,5 +1,8 @@
 # Web App For What The Fridge 🍎
 
+## Preview
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/55214510/211989825-f56d03f1-d331-48ea-b96f-339562e296d8.gif)
+
 ## Set-up
 
 **Requirement**
